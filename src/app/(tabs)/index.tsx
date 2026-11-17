@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { Pig, PigMood, Ring } from '@/components/art';
-import { Btn, Card, Gap, Screen, T } from '@/components/ui';
+import { Gap, RoundBtn, Screen, T } from '@/components/ui';
 import { kcalToSteps, summarize, todayKey } from '@/lib/energy';
 import { fmt } from '@/lib/i18n';
 import { pickImage } from '@/lib/image';
@@ -13,14 +13,16 @@ import { setPending } from '@/lib/pending';
 import { useStore } from '@/lib/store';
 import { useTheme } from '@/lib/theme';
 
-function CameraIcon({ color }: { color: string }) {
+function Icon({ d, color, size = 26 }: { d: string; color: string; size?: number }) {
   return (
-    <Svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <Path d="M4 8h3l2-3h6l2 3h3v11H4z" />
-      <Path d="M12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round">
+      <Path d={d} />
     </Svg>
   );
 }
+const CAMERA = 'M4 8.5h2.6l1.6-2.5h7.6l1.6 2.5H20v10.5H4zM12 16.5a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z';
+const GALLERY = 'M4 5h16v14H4zM4 15l4.5-4.5 4 4 2.5-2.5L20 17M15.5 9.5h.01';
+const REFRESH = 'M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6';
 
 function timeLabel(iso: string, lang: 'th' | 'en') {
   return new Date(iso).toLocaleTimeString(lang === 'th' ? 'th-TH' : 'en-US', { hour: '2-digit', minute: '2-digit' });
@@ -28,9 +30,9 @@ function timeLabel(iso: string, lang: 'th' | 'en') {
 
 export default function Today() {
   const { t, state, removeMeal } = useStore();
-  const [confirmId, setConfirmId] = useState<string | null>(null);
   const c = useTheme();
   const [busy, setBusy] = useState<'camera' | 'library' | null>(null);
+  const [armed, setArmed] = useState<string | null>(null);
   const profile = state.profile!;
   const lang = state.lang;
   const today = todayKey();
@@ -43,7 +45,8 @@ export default function Today() {
   const progress = s.stepGoal ? steps / s.stepGoal : 0;
   const left = Math.max(0, s.stepGoal - steps);
   const mood: PigMood = progress >= 1 ? 'proud' : progress > 0.5 ? 'happy' : 'calm';
-  const soFarBalance = intake - s.baseSoFar - s.walkKcal;
+  const burned = s.baseSoFar + s.walkKcal;
+  const net = intake - burned;
 
   const snap = async (source: 'camera' | 'library') => {
     if (!state.apiKey) return router.push('/connect-ai');
@@ -59,140 +62,113 @@ export default function Today() {
     }
   };
 
-  const Row = ({ label, value, sign, color }: { label: string; value: number; sign: string; color?: string }) => (
-    <View style={styles.eRow}>
-      <T kind="body" color={c.sub}>
-        {label}
+  const Stat = ({ label, value, color }: { label: string; value: string; color?: string }) => (
+    <View style={styles.stat}>
+      <T kind="title" color={color}>
+        {value}
       </T>
-      <T kind="body" color={color} style={{ fontWeight: '600' }}>
-        {sign}
-        {fmt(value, lang)} kcal
-      </T>
+      <T kind="caption">{label}</T>
     </View>
   );
 
   return (
-    <Screen>
-      <View style={styles.header}>
-        <View>
-          <T kind="label">{now.toLocaleDateString(lang === 'th' ? 'th-TH' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long' })}</T>
-          <T kind="display">Moo</T>
+    <Screen
+      footer={
+        <View style={styles.dock}>
+          <View style={{ width: 52 }} />
+          <RoundBtn size={72} label={t('snapMeal')} loading={busy === 'camera'} onPress={() => snap('camera')}>
+            <Icon d={CAMERA} color={c.onPrimary} size={30} />
+          </RoundBtn>
+          <RoundBtn size={52} kind="quiet" label={t('pickPhoto')} loading={busy === 'library'} onPress={() => snap('library')}>
+            <Icon d={GALLERY} color={c.text} size={22} />
+          </RoundBtn>
         </View>
-        <Pig size={56} mood={mood} />
+      }>
+      <View style={styles.header}>
+        <T kind="caption">
+          {now.toLocaleDateString(lang === 'th' ? 'th-TH' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long' })}
+        </T>
+        <Pig size={40} mood={mood} />
       </View>
 
-      <Gap h={8} />
+      <Gap h={12} />
       <View style={{ alignItems: 'center' }}>
-        <Ring progress={progress} size={250}>
-          <T kind="big">{fmt(steps, lang)}</T>
-          <T kind="sub">{t('stepsOf', { goal: fmt(s.stepGoal, lang) })}</T>
-          <Gap h={6} />
-          <T kind="body" color={progress >= 1 ? c.good : c.primary} style={{ fontWeight: '600' }}>
-            {progress >= 1 ? t('goalReached') : t('stepsLeft', { n: fmt(left, lang) })}
-          </T>
+        <Ring progress={progress} size={236}>
+          <T kind="hero">{fmt(steps, lang)}</T>
+          <T kind="caption">{t('stepsOf', { goal: fmt(s.stepGoal, lang) })}</T>
         </Ring>
-        <Gap h={6} />
-        <Pressable onPress={() => router.push('/steps')} hitSlop={8}>
-          <T kind="sub" color={c.primary}>
-            {stepEntry ? t('stepsUpdated', { t: timeLabel(stepEntry.updatedAt, lang) }) : t('stepsNever')} · {t('updateSteps')} ›
+        <Gap h={16} />
+        <T kind="title" color={progress >= 1 ? c.good : c.text}>
+          {progress >= 1 ? t('goalReached') : t('stepsLeft', { n: fmt(left, lang) })}
+        </T>
+        <Gap h={10} />
+        <Pressable onPress={() => router.push('/steps')} hitSlop={10} style={[styles.pill, { backgroundColor: c.fill }]}>
+          <Icon d={REFRESH} color={c.sub} size={14} />
+          <T kind="caption">
+            {stepEntry ? t('stepsUpdated', { t: timeLabel(stepEntry.updatedAt, lang) }) : t('updateSteps')}
           </T>
         </Pressable>
       </View>
 
-      <Gap h={20} />
-      {!state.apiKey ? (
+      <Gap h={28} />
+      <View style={styles.stats}>
+        <Stat label={t('eaten')} value={fmt(intake, lang)} />
+        <View style={[styles.vline, { backgroundColor: c.line }]} />
+        <Stat label={t('used')} value={fmt(burned, lang)} />
+        <View style={[styles.vline, { backgroundColor: c.line }]} />
+        <Stat label={`${t('net')} kcal`} value={(net > 0 ? '+' : net < 0 ? '−' : '') + fmt(Math.abs(net), lang)} color={net <= 0 ? c.good : c.warn} />
+      </View>
+      {s.overCap > 0 ? (
         <>
-          <T kind="sub" center>
-            {t('connectAiFirst')}
+          <Gap h={10} />
+          <T kind="caption" color={c.warn} center>
+            {t('overCapNote')}
           </T>
-          <Gap h={8} />
         </>
       ) : null}
-      <View style={styles.actions}>
-        <Btn
-          label={t('snapMeal')}
-          icon={<CameraIcon color={c.onPrimary} />}
-          loading={busy === 'camera'}
-          onPress={() => snap('camera')}
-          style={{ flex: 2 }}
-        />
-        <Btn kind="soft" label={t('pickPhoto')} loading={busy === 'library'} onPress={() => snap('library')} style={{ flex: 1 }} />
-      </View>
 
-      <Gap h={24} />
-      <T kind="label">{t('todayMeals')}</T>
-      <Gap h={8} />
+      <Gap h={36} />
+      <T kind="caption">{t('todayMeals')}</T>
+      <Gap h={6} />
       {meals.length === 0 ? (
-        <Card>
-          <T kind="sub">{t('noMeals')}</T>
-        </Card>
-      ) : (
-        <View style={{ gap: 10 }}>
-          {meals.map((m) => (
-            <Card key={m.id} style={styles.meal}>
-              {m.thumb ? <Image source={{ uri: m.thumb }} style={styles.thumb} /> : <View style={[styles.thumb, { backgroundColor: c.primarySoft }]} />}
-              <View style={{ flex: 1 }}>
-                <T kind="body" style={{ fontWeight: '600' }}>
-                  {lang === 'th' ? m.nameTh : m.nameEn}
-                </T>
-                <T kind="sub">
-                  {timeLabel(m.time, lang)} · {fmt(m.kcal, lang)} kcal
-                </T>
-              </View>
-              <View style={{ alignItems: 'flex-end' }}>
-                <T kind="body" color={c.primary} style={{ fontWeight: '700' }}>
-                  {fmt(kcalToSteps(profile, m.kcal), lang)}
-                </T>
-                <Pressable
-                  hitSlop={10}
-                  accessibilityLabel={t('deleteMeal')}
-                  onPress={() => (confirmId === m.id ? removeMeal(m.id) : setConfirmId(m.id))}>
-                  <T kind="sub" color={confirmId === m.id ? c.warn : c.sub}>
-                    {confirmId === m.id ? t('resetConfirm') : '×'}
-                  </T>
-                </Pressable>
-              </View>
-            </Card>
-          ))}
-        </View>
-      )}
-
-      <Gap h={24} />
-      <T kind="label">{t('energyToday')}</T>
-      <Gap h={8} />
-      <Card>
-        <Row label={t('eaten')} value={intake} sign="+" />
-        <Row label={`${t('baseBurn')} (${t('soFar')})`} value={s.baseSoFar} sign="−" />
-        <Row label={t('walkBurn')} value={s.walkKcal} sign="−" />
-        <View style={[styles.divider, { backgroundColor: c.line }]} />
-        <View style={styles.eRow}>
-          <T kind="title">{t('balance')}</T>
-          <T kind="title" color={soFarBalance <= 0 ? c.good : c.warn}>
-            {soFarBalance <= 0 ? t('deficit', { n: fmt(-soFarBalance, lang) }) : t('surplus', { n: fmt(soFarBalance, lang) })}
-          </T>
-        </View>
-        <Gap h={4} />
-        <T kind="sub">
-          {t('fullDay')}: {fmt(s.base, lang)} kcal {t('baseBurn').toLowerCase()}
+        <T kind="sub" style={{ paddingVertical: 12 }}>
+          {t('noMeals')}
         </T>
-        {s.overCap > 0 ? (
-          <>
-            <Gap h={8} />
-            <T kind="sub" color={c.warn}>
-              {t('overCapNote')}
-            </T>
-          </>
-        ) : null}
-      </Card>
+      ) : (
+        meals.map((m, i) => (
+          <Pressable
+            key={m.id}
+            onPress={() => (armed === m.id ? removeMeal(m.id) : setArmed(armed === m.id ? null : m.id))}
+            style={[styles.meal, i < meals.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: c.line }]}>
+            {m.thumb ? <Image source={{ uri: m.thumb }} style={styles.thumb} /> : <View style={[styles.thumb, { backgroundColor: c.fill }]} />}
+            <View style={{ flex: 1 }}>
+              <T kind="body" weight="500">
+                {lang === 'th' ? m.nameTh : m.nameEn}
+              </T>
+              <T kind="caption" color={armed === m.id ? c.warn : undefined}>
+                {armed === m.id ? t('tapToDelete') : `${timeLabel(m.time, lang)} · ${fmt(m.kcal, lang)} kcal`}
+              </T>
+            </View>
+            <View style={{ alignItems: 'flex-end' }}>
+              <T kind="body" weight="600">
+                {fmt(kcalToSteps(profile, m.kcal), lang)}
+              </T>
+              <T kind="caption">{t('stepsUnit')}</T>
+            </View>
+          </Pressable>
+        ))
+      )}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  actions: { flexDirection: 'row', gap: 10 },
-  meal: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 },
-  thumb: { width: 52, height: 52, borderRadius: 14 },
-  eRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6 },
-  divider: { height: 1, marginVertical: 8 },
+  pill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 14 },
+  stats: { flexDirection: 'row', alignItems: 'center' },
+  stat: { flex: 1, alignItems: 'center', gap: 2 },
+  vline: { width: 1, height: 28 },
+  meal: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 12 },
+  thumb: { width: 44, height: 44, borderRadius: 12 },
+  dock: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 20 },
 });

@@ -4,20 +4,20 @@ import { Platform, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { useStore } from '@/lib/store';
-import { font, useTheme } from '@/lib/theme';
+import { useTheme } from '@/lib/theme';
 
 function Icon({ d, color }: { d: string; color: string }) {
   return (
-    <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
       <Path d={d} />
     </Svg>
   );
 }
 
 const ICONS = {
-  today: 'M12 3a9 9 0 1 0 9 9M12 7v5l3 2',
-  history: 'M4 20V10M10 20V4M16 20v-7M22 20H2',
-  settings: 'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M16 4v4M10 10v4M18 16v4',
+  today: 'M3 11l9-7 9 7v9h-6v-6H9v6H3z',
+  history: 'M5 20V12M12 20V5M19 20v-9',
+  settings: 'M4 7h10M18 7h2M16 5v4M4 17h4M12 17h8M10 15v4',
 };
 
 export default function TabsLayout() {
@@ -33,15 +33,15 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: c.primary,
         tabBarInactiveTintColor: c.sub,
-        tabBarStyle: { backgroundColor: c.card, borderTopColor: c.line, height: Platform.OS === 'web' ? 64 : undefined },
-        tabBarLabelStyle: { fontFamily: Platform.OS === 'web' ? font : undefined, fontSize: 12, fontWeight: '600' },
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: c.text,
+        tabBarStyle: { backgroundColor: c.bg, borderTopWidth: 0, elevation: 0, height: Platform.OS === 'web' ? 60 : undefined },
         sceneStyle: { backgroundColor: c.bg },
       }}>
-      <Tabs.Screen name="index" options={{ title: t('tabToday'), tabBarIcon: ({ color }) => <Icon d={ICONS.today} color={String(color)} /> }} />
-      <Tabs.Screen name="history" options={{ title: t('tabHistory'), tabBarIcon: ({ color }) => <Icon d={ICONS.history} color={String(color)} /> }} />
-      <Tabs.Screen name="settings" options={{ title: t('tabSettings'), tabBarIcon: ({ color }) => <Icon d={ICONS.settings} color={String(color)} /> }} />
+      <Tabs.Screen name="index" options={{ title: t('tabToday'), tabBarAccessibilityLabel: t('tabToday'), tabBarIcon: ({ color }) => <Icon d={ICONS.today} color={String(color)} /> }} />
+      <Tabs.Screen name="history" options={{ title: t('tabHistory'), tabBarAccessibilityLabel: t('tabHistory'), tabBarIcon: ({ color }) => <Icon d={ICONS.history} color={String(color)} /> }} />
+      <Tabs.Screen name="settings" options={{ title: t('tabSettings'), tabBarAccessibilityLabel: t('tabSettings'), tabBarIcon: ({ color }) => <Icon d={ICONS.settings} color={String(color)} /> }} />
     </Tabs>
   );
 }

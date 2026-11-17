@@ -6,8 +6,8 @@ import { useTheme } from '@/lib/theme';
 
 export function Ring({
   progress,
-  size = 240,
-  stroke = 18,
+  size = 260,
+  stroke = 12,
   children,
 }: {
   progress: number;
@@ -20,6 +20,7 @@ export function Ring({
   const circ = 2 * Math.PI * r;
   const p = Math.max(0, Math.min(1, progress));
   const color = p >= 1 ? c.good : c.primary;
+  const shown = p > 0 ? Math.max(p, 0.012) : 0;
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
       <Svg width={size} height={size} style={{ position: 'absolute' }}>
@@ -33,7 +34,7 @@ export function Ring({
           fill="none"
           strokeLinecap="round"
           strokeDasharray={`${circ} ${circ}`}
-          strokeDashoffset={circ * (1 - p)}
+          strokeDashoffset={circ * (1 - shown)}
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
         />
       </Svg>

@@ -1,10 +1,10 @@
 import * as Clipboard from 'expo-clipboard';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 
 import { Pig } from '@/components/art';
-import { Btn, Card, Gap, Screen, T } from '@/components/ui';
+import { Btn, Gap, Group, Row, Screen, T } from '@/components/ui';
 import { todayKey } from '@/lib/energy';
 import { KeyError, QuotaError, readSteps } from '@/lib/gemini';
 import { fmt } from '@/lib/i18n';
@@ -92,78 +92,63 @@ export default function Steps() {
   return (
     <Screen>
       <T kind="display">{t('stepsTitle')}</T>
-      <Gap h={4} />
+      <Gap h={8} />
       <T kind="sub">{t('stepsIntro')}</T>
-      <Gap h={18} />
+      <Gap h={28} />
 
-      <Pressable onPress={() => setShowShortcut(!showShortcut)}>
-        <Card>
-          <T kind="title">{t('viaShortcut')}</T>
-          <T kind="sub">{t('viaShortcutHint')}</T>
-        </Card>
-      </Pressable>
-      {showShortcut && (
-        <>
-          <Gap h={8} />
-          <Card style={{ backgroundColor: c.primarySoft, borderColor: c.primarySoft }}>
-            <T kind="title">{t('shortcutTitle')}</T>
-            <Gap h={8} />
-            <T kind="body">{t('shortcutSteps')}</T>
-            <Gap h={12} />
-            <T kind="sub" style={{ fontFamily: Platform.OS === 'web' ? 'ui-monospace, monospace' : undefined }}>
-              {shortcutLink()}
+      <Group>
+        <Row label={t('viaScreenshot')} sub={t('viaScreenshotHint')} onPress={fromScreenshot} />
+        <Row label={t('viaShortcut')} sub={t('viaShortcutHint')} onPress={() => setShowShortcut(!showShortcut)} last={!showShortcut} />
+        {showShortcut ? (
+          <View style={{ paddingBottom: 16 }}>
+            <T kind="sub" color={c.text}>
+              {t('shortcutSteps')}
             </T>
+            <Gap h={12} />
+            <View style={[styles.code, { backgroundColor: c.fill }]}>
+              <T kind="caption" style={{ fontFamily: Platform.OS === 'web' ? 'ui-monospace, monospace' : undefined }}>
+                {shortcutLink()}
+              </T>
+            </View>
             <Gap h={10} />
-            <Btn kind="primary" label={copied ? t('copied') : t('copyLink')} onPress={copy} />
-          </Card>
-        </>
-      )}
-
-      <Gap h={12} />
-      <Pressable onPress={fromScreenshot} disabled={reading}>
-        <Card>
-          <T kind="title">{t('viaScreenshot')}</T>
-          <T kind="sub">{t('viaScreenshotHint')}</T>
-        </Card>
-      </Pressable>
+            <Btn kind="quiet" label={copied ? t('copied') : t('copyLink')} onPress={copy} />
+          </View>
+        ) : null}
+      </Group>
 
       {reading && (
         <View style={styles.center}>
-          <ActivityIndicator color={c.primary} />
-          <Gap h={6} />
+          <ActivityIndicator color={c.sub} />
+          <Gap h={8} />
           <T kind="sub">{t('readingSteps')}</T>
         </View>
       )}
       {error && (
-        <>
-          <Gap />
-          <T kind="body" color={c.warn} center>
-            {error}
-          </T>
-        </>
+        <T kind="sub" color={c.warn} center>
+          {error}
+        </T>
       )}
       {found != null && (
-        <>
-          <Gap h={16} />
-          <Card style={{ alignItems: 'center' }}>
-            <T kind="title" center>
-              {t('stepsFound', { n: fmt(found, lang) })}
-            </T>
-            <Gap />
-            <View style={{ flexDirection: 'row', gap: 10, alignSelf: 'stretch' }}>
-              <Btn label={t('save')} onPress={confirm} style={{ flex: 1 }} />
-              <Btn kind="soft" label={t('retry')} onPress={fromScreenshot} style={{ flex: 1 }} />
-            </View>
-          </Card>
-        </>
+        <View style={styles.center}>
+          <T kind="hero">{fmt(found, lang)}</T>
+          <T kind="sub">
+            {t('stepsUnit')} · {t('isThisRight')}
+          </T>
+          <Gap h={20} />
+          <View style={{ flexDirection: 'row', gap: 10, alignSelf: 'stretch' }}>
+            <Btn kind="quiet" label={t('retry')} onPress={fromScreenshot} style={{ flex: 1 }} />
+            <Btn label={t('save')} onPress={confirm} style={{ flex: 2 }} />
+          </View>
+        </View>
       )}
 
-      <Gap h={20} />
+      <Gap h={12} />
       <Btn kind="ghost" label={t('back')} onPress={close} />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  center: { alignItems: 'center', paddingVertical: 32 },
+  center: { alignItems: 'center', paddingVertical: 28 },
+  code: { borderRadius: 12, padding: 12 },
 });

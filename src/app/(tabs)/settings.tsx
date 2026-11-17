@@ -1,9 +1,9 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Platform, Pressable, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { GoalFields, LangSwitch, ProfileFields } from '@/components/profile';
-import { Btn, Card, Gap, Screen, T } from '@/components/ui';
+import { Btn, Gap, Group, Row, Screen, T } from '@/components/ui';
 import { kcalPerStep, kcalToSteps, summarize, todayKey } from '@/lib/energy';
 import { fmt } from '@/lib/i18n';
 import { State, useStore } from '@/lib/store';
@@ -42,57 +42,48 @@ export default function Settings() {
   const { t, state, update, reset } = useStore();
   const c = useTheme();
   const [confirm, setConfirm] = useState(false);
+  const [showFormula, setShowFormula] = useState(false);
   const p = state.profile!;
   const used = state.aiUsage[todayKey()] ?? 0;
 
   return (
     <Screen>
       <T kind="display">{t('tabSettings')}</T>
-      <Gap h={16} />
-
-      <T kind="label">{t('language')}</T>
-      <Gap h={8} />
-      <LangSwitch />
-
       <Gap h={24} />
-      <T kind="label">{t('ai')}</T>
-      <Gap h={8} />
-      <Pressable onPress={() => router.push('/connect-ai')}>
-        <Card>
-          <T kind="title" color={state.apiKey ? c.good : c.primary}>
-            {state.apiKey ? `✓ ${t('aiConnected')}` : t('aiTitle')} ›
-          </T>
-          {state.apiKey ? <T kind="sub">{t('aiUsedToday', { n: used })}</T> : null}
-        </Card>
-      </Pressable>
 
-      <Gap h={24} />
-      <T kind="label">{t('profile')}</T>
-      <Gap h={8} />
-      <ProfileFields value={p} onChange={(np) => update((s) => ({ ...s, profile: np }))} />
-      <Gap h={12} />
-      <GoalFields value={p.goal} onChange={(goal) => update((s) => ({ ...s, profile: { ...p, goal } }))} />
-
-      <Gap h={24} />
-      <T kind="label">{t('formula')}</T>
-      <Gap h={8} />
-      <Card>
-        <T kind="sub" color={c.text}>
-          {t('formulaBody', { kps: kcalPerStep(p).toFixed(3), spk: fmt(kcalToSteps(p, 100), state.lang) })}
-        </T>
-      </Card>
-
-      <Gap h={24} />
-      <T kind="label">{t('data')}</T>
-      <Gap h={8} />
-      <T kind="sub">{t('dataLocal')}</T>
-      <Gap h={8} />
-      <Btn kind="soft" label={t('exportCsv')} onPress={() => download(`moo-${todayKey()}.csv`, buildCsv(state))} />
-      <Gap h={4} />
-      <T kind="sub" center>
-        {t('exportHint')}
+      <T kind="caption" style={{ marginLeft: 4, marginBottom: 8 }}>
+        {t('language')}
       </T>
-      <Gap h={12} />
+      <LangSwitch />
+      <Gap h={24} />
+
+      <Group title={t('ai')}>
+        <Row
+          last
+          label={state.apiKey ? t('aiConnected') : t('aiTitle')}
+          sub={state.apiKey ? t('aiUsedToday', { n: used }) : undefined}
+          onPress={() => router.push('/connect-ai')}
+          right={state.apiKey ? <View style={[styles.dot, { backgroundColor: c.good }]} /> : undefined}
+        />
+      </Group>
+
+      <T kind="caption" style={{ marginLeft: 4, marginBottom: 8 }}>
+        {t('profile')}
+      </T>
+      <ProfileFields value={p} onChange={(np) => update((s) => ({ ...s, profile: np }))} />
+      <GoalFields value={p.goal} onChange={(goal) => update((s) => ({ ...s, profile: { ...p, goal } }))} />
+      <Gap h={24} />
+
+      <Group title={t('data')}>
+        <Row label={t('exportCsv')} sub={t('exportHint')} onPress={() => download(`moo-${todayKey()}.csv`, buildCsv(state))} />
+        <Row label={t('formula')} onPress={() => setShowFormula(!showFormula)} last={!showFormula} />
+        {showFormula ? (
+          <View style={{ paddingBottom: 14 }}>
+            <T kind="caption">{t('formulaBody', { kps: kcalPerStep(p).toFixed(3), spk: fmt(kcalToSteps(p, 100), state.lang) })}</T>
+          </View>
+        ) : null}
+      </Group>
+
       <Btn
         kind="danger"
         label={confirm ? t('resetConfirm') : t('resetAll')}
@@ -103,14 +94,14 @@ export default function Settings() {
         }}
       />
       <Gap h={24} />
-      <View style={{ alignItems: 'center' }}>
-        <T kind="sub" center>
-          Moo · {t('appTagline')}
-        </T>
-        <T kind="sub" center>
-          {t('disclaimer')}
-        </T>
-      </View>
+      <T kind="caption" center>
+        {t('dataLocal')}
+      </T>
+      <T kind="caption" center>
+        {t('disclaimer')}
+      </T>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({ dot: { width: 8, height: 8, borderRadius: 4 } });

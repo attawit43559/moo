@@ -1,10 +1,10 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { Pig } from '@/components/art';
-import { Btn, Card, Chip, Gap, Screen, T } from '@/components/ui';
+import { Btn, Gap, Screen, Segmented, T } from '@/components/ui';
 import { kcalToSteps, todayKey } from '@/lib/energy';
 import { analyzeFood, FoodGuess, FoodResult, KeyError, QuotaError } from '@/lib/gemini';
 import { fmt } from '@/lib/i18n';
@@ -12,12 +12,6 @@ import { Picked } from '@/lib/image';
 import { getPending } from '@/lib/pending';
 import { newId, useStore } from '@/lib/store';
 import { useTheme } from '@/lib/theme';
-
-const PORTIONS = [
-  { key: 'small', f: 0.7 },
-  { key: 'normal', f: 1 },
-  { key: 'large', f: 1.4 },
-] as const;
 
 export default function Food() {
   const { t, state, addMeal, bumpAi } = useStore();
@@ -51,12 +45,14 @@ export default function Food() {
 
   if (!state.profile) return null;
   const profile = state.profile;
+  const lang = state.lang;
   const options: FoodGuess[] = result ? [result.best, ...result.alternatives] : [];
   const g = options[choice];
   const factor = portion * eaten;
   const kcal = g ? Math.round(g.kcal * factor) : 0;
   const steps = kcalToSteps(profile, kcal);
-  const name = (x: FoodGuess) => (state.lang === 'th' ? x.nameTh : x.nameEn);
+  const name = (x: FoodGuess) => (lang === 'th' ? x.nameTh : x.nameEn);
+  const ok = result?.isFood && g;
 
   const save = () => {
     if (!g) return;
@@ -73,97 +69,100 @@ export default function Food() {
   };
 
   return (
-    <Screen>
-      {photo.current ? <Image source={{ uri: `data:image/jpeg;base64,${photo.current.base64}` }} style={styles.photo} contentFit="cover" /> : null}
-      <Gap h={16} />
+    <Screen
+      footer={
+        ok ? (
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <Btn kind="quiet" label={t('cancel')} onPress={close} style={{ flex: 1 }} />
+            <Btn label={t('saveMeal')} onPress={save} style={{ flex: 2 }} />
+          </View>
+        ) : undefined
+      }>
+      {photo.current ? (
+        <Image source={{ uri: `data:image/jpeg;base64,${photo.current.base64}` }} style={styles.photo} contentFit="cover" />
+      ) : null}
 
       {!result && !error && (
         <View style={styles.center}>
-          <Pig size={80} mood="calm" />
-          <Gap />
-          <ActivityIndicator color={c.primary} />
-          <Gap h={8} />
-          <T kind="body" color={c.sub}>
-            {t('analyzing')}
-          </T>
+          <ActivityIndicator color={c.sub} />
+          <Gap h={10} />
+          <T kind="sub">{t('analyzing')}</T>
         </View>
       )}
 
-      {error && (
+      {(error || (result && !result.isFood)) && (
         <View style={styles.center}>
-          <T kind="body" center>
-            {error}
-          </T>
-          <Gap />
-          <Btn label={t('retry')} onPress={run} style={{ alignSelf: 'stretch' }} />
-          <Gap h={8} />
-          <Btn kind="ghost" label={t('cancel')} onPress={close} style={{ alignSelf: 'stretch' }} />
-        </View>
-      )}
-
-      {result && !result.isFood && (
-        <View style={styles.center}>
-          <Pig size={80} mood="calm" />
+          <Pig size={64} mood="calm" />
           <Gap />
           <T kind="body" center>
-            {t('notFood')}
+            {error ?? t('notFood')}
           </T>
-          <Gap />
+          <Gap h={20} />
+          {error ? <Btn label={t('retry')} onPress={run} style={{ alignSelf: 'stretch' }} /> : null}
           <Btn kind="ghost" label={t('back')} onPress={close} style={{ alignSelf: 'stretch' }} />
         </View>
       )}
 
-      {result && result.isFood && g && (
+      {ok && (
         <>
-          <Card style={{ alignItems: 'center' }}>
-            <T kind="title" center>
-              {name(g)}
-            </T>
-            <Gap h={4} />
-            <T kind="big" color={c.primary}>
-              {t('equalsSteps', { n: fmt(steps, state.lang) })}
-            </T>
-            <T kind="sub">
-              {fmt(kcal, state.lang)} kcal · {t('range', { lo: fmt(g.kcalLow * factor, state.lang), hi: fmt(g.kcalHigh * factor, state.lang) })}
-            </T>
-          </Card>
+          <Gap h={28} />
+          <T kind="sub" center>
+            {name(g)}
+          </T>
+          <T kind="hero" center color={c.primary}>
+            {fmt(steps, lang)}
+          </T>
+          <T kind="sub" center>
+            {t('stepsUnit')} · {fmt(kcal, lang)} kcal
+          </T>
+          <T kind="caption" center>
+            {t('range', { lo: fmt(g.kcalLow * factor, lang), hi: fmt(g.kcalHigh * factor, lang) })}
+          </T>
 
           {options.length > 1 && (
             <>
-              <Gap h={16} />
-              <T kind="label">{t('isItThis')}</T>
-              <Gap h={8} />
-              <View style={{ gap: 8 }}>
-                {options.map((o, i) => (
-                  <View key={i} style={styles.row}>
-                    <Chip label={name(o)} hint={`${fmt(o.kcal, state.lang)} kcal`} selected={choice === i} onPress={() => setChoice(i)} />
-                  </View>
-                ))}
-              </View>
+              <Gap h={28} />
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+                {options.map((o, i) => {
+                  const on = choice === i;
+                  return (
+                    <Pressable
+                      key={i}
+                      onPress={() => setChoice(i)}
+                      style={[styles.tag, { backgroundColor: on ? c.text : c.fill }]}>
+                      <T kind="caption" weight="600" color={on ? c.bg : c.text}>
+                        {name(o)}
+                      </T>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
             </>
           )}
 
-          <Gap h={16} />
-          <T kind="label">{t('portion')}</T>
-          <Gap h={8} />
-          <View style={styles.row}>
-            {PORTIONS.map((p) => (
-              <Chip key={p.key} label={t(p.key)} selected={portion === p.f} onPress={() => setPortion(p.f)} />
-            ))}
-          </View>
-
-          <Gap h={16} />
-          <T kind="label">{t('ate')}</T>
-          <Gap h={8} />
-          <View style={styles.row}>
-            <Chip label={t('ateAll')} selected={eaten === 1} onPress={() => setEaten(1)} />
-            <Chip label={t('ateHalf')} selected={eaten === 0.5} onPress={() => setEaten(0.5)} />
-          </View>
-
           <Gap h={24} />
-          <Btn label={t('saveMeal')} onPress={save} />
+          <T kind="caption">{t('portion')}</T>
           <Gap h={8} />
-          <Btn kind="ghost" label={t('cancel')} onPress={close} />
+          <Segmented
+            options={[
+              { value: 0.7, label: t('small') },
+              { value: 1, label: t('normal') },
+              { value: 1.4, label: t('large') },
+            ]}
+            value={portion}
+            onChange={setPortion}
+          />
+          <Gap h={16} />
+          <T kind="caption">{t('ate')}</T>
+          <Gap h={8} />
+          <Segmented
+            options={[
+              { value: 1, label: t('ateAll') },
+              { value: 0.5, label: t('ateHalf') },
+            ]}
+            value={eaten}
+            onChange={setEaten}
+          />
         </>
       )}
     </Screen>
@@ -171,7 +170,7 @@ export default function Food() {
 }
 
 const styles = StyleSheet.create({
-  photo: { width: '100%', aspectRatio: 4 / 3, borderRadius: 24 },
-  center: { alignItems: 'center', paddingVertical: 24 },
-  row: { flexDirection: 'row', gap: 10 },
+  photo: { width: '100%', aspectRatio: 4 / 3, borderRadius: 28 },
+  center: { alignItems: 'center', paddingVertical: 32 },
+  tag: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 16 },
 });

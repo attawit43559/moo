@@ -1,35 +1,38 @@
 import { useColorScheme } from 'react-native';
 
+// Minimal palette: near-white canvas, ink text, one accent used sparingly.
 const light = {
-  bg: '#FBF8F5',
+  bg: '#FAFAF9',
   card: '#FFFFFF',
-  text: '#1F1A17',
-  sub: '#7A716B',
-  line: '#EFE8E2',
-  primary: '#F47C8A', // piggy pink
-  primarySoft: '#FDE6E9',
+  fill: '#F2F1EF', // inputs, segmented track, ring track
+  text: '#111111',
+  sub: '#8A8A8E',
+  line: '#ECEBE9',
+  primary: '#FF5C7A',
+  primarySoft: '#FFEDF0',
   onPrimary: '#FFFFFF',
-  good: '#2FA37A',
-  goodSoft: '#E1F4EC',
-  warn: '#E58A2B',
-  warnSoft: '#FCEEDD',
-  ringTrack: '#F3ECE6',
+  good: '#1FA971',
+  goodSoft: '#E6F6EF',
+  warn: '#E8803A',
+  warnSoft: '#FDF0E6',
+  ringTrack: '#EFEEEC',
 };
 
 const dark: typeof light = {
-  bg: '#141211',
-  card: '#1F1C1A',
-  text: '#F5EFEA',
-  sub: '#A69C95',
-  line: '#2D2926',
-  primary: '#F7909C',
-  primarySoft: '#3A2327',
-  onPrimary: '#1B0F11',
-  good: '#4CC497',
-  goodSoft: '#173328',
-  warn: '#F0A350',
-  warnSoft: '#3A2A17',
-  ringTrack: '#2B2724',
+  bg: '#0E0E0F',
+  card: '#1A1A1C',
+  fill: '#232326',
+  text: '#F4F4F5',
+  sub: '#8E8E93',
+  line: '#26262A',
+  primary: '#FF6F8A',
+  primarySoft: '#3A1E25',
+  onPrimary: '#FFFFFF',
+  good: '#34C88A',
+  goodSoft: '#12291F',
+  warn: '#F2994A',
+  warnSoft: '#33231524',
+  ringTrack: '#232326',
 };
 
 export type Palette = typeof light;
@@ -39,5 +42,5 @@ export function useTheme(): Palette {
 }
 
 export const font = 'IBM Plex Sans Thai, system-ui, -apple-system, sans-serif';
-export const radius = 20;
-export const MAX_W = 520;
+export const radius = 22;
+export const MAX_W = 480;
