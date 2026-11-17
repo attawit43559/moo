@@ -80,7 +80,7 @@ export default function History() {
           </View>
         ))}
       </Sticker>
-      <Gap h={110} />
+      <Gap h={24} />
     </Screen>
   );
 }

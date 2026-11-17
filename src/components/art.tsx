@@ -51,8 +51,8 @@ export function Pig({ size = 96, mood = 'happy' }: { size?: number; mood?: PigMo
   const w = 2.6;
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100">
-      <Circle cx="40" cy="60" r="30" fill="#FFC9D6" />
-      <Circle cx="70" cy="40" r="14" fill={mood === 'proud' ? '#FFF3A6' : '#CBEFFC'} />
+      <Circle cx="46" cy="60" r="32" fill="#FFC9D6" />
+      <Circle cx="86" cy="22" r="9" fill={mood === 'proud' ? '#FFF3A6' : '#CBEFFC'} />
       <Path d="M27 36 C24 24 28 14 33 12 C38 16 42 22 43 27" fill="none" stroke={ink} strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" />
       <Path d="M73 36 C76 24 72 14 67 12 C62 16 58 22 57 27" fill="none" stroke={ink} strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" />
       <Path d="M50 22 C72 22 84 38 84 56 C84 74 70 86 50 86 C30 86 16 74 16 56 C16 38 28 22 50 22 Z" fill="none" stroke={ink} strokeWidth={w} />

@@ -24,45 +24,39 @@ const ICONS: Record<string, string> = {
 };
 const CAMERA = 'M4 8.5h2.6l1.6-2.5h7.6l1.6 2.5H20v10.5H4zM12 16.5a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z';
 
-/** Floating black pill: three tabs plus the camera as the main action. */
+const BILL = 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6';
+
+/** Quiet icon row with the camera as a raised plate in the middle. */
 function PillBar({ state, descriptors, navigateToTab }: BottomTabBarProps) {
   const c = useTheme();
   const { t } = useStore();
   const { busy, snap } = useSnap();
   const insets = useSafeAreaInsets();
+  const Item = ({ d, label, on, onPress }: { d: string; label: string; on?: boolean; onPress: () => void }) => (
+    <Pressable accessibilityRole="tab" accessibilityLabel={label} accessibilityState={{ selected: !!on }} onPress={onPress} style={styles.tab}>
+      <Icon d={d} color={on ? c.ink : '#A3A6AD'} />
+      <View style={[styles.dot, { backgroundColor: on ? c.ink : 'transparent' }]} />
+    </Pressable>
+  );
   const tab = (i: number) => {
     const route = state.routes[i];
     const on = state.index === i;
     const label = descriptors[route.key].options.tabBarAccessibilityLabel ?? route.name;
-    return (
-      <Pressable
-        key={route.key}
-        accessibilityRole="tab"
-        accessibilityLabel={label}
-        accessibilityState={{ selected: on }}
-        onPress={() => {
-          if (!on) navigateToTab(route.key);
-        }}
-        style={styles.tab}>
-        <Icon d={ICONS[route.name] ?? ICONS.index} color={on ? '#FFFFFF' : '#8B8E95'} />
-        <View style={[styles.dot, { backgroundColor: on ? '#FFFFFF' : 'transparent' }]} />
-      </Pressable>
-    );
+    return <Item key={route.key} d={ICONS[route.name] ?? ICONS.index} label={label} on={on} onPress={() => !on && navigateToTab(route.key)} />;
   };
   return (
-    <View pointerEvents="box-none" style={[styles.wrap, { paddingBottom: Math.max(insets.bottom, 16) }]}>
-      <View style={[styles.pill, { backgroundColor: c.ink }]}>
-        {tab(0)}
-        {tab(1)}
-        {tab(2)}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('snapMeal')}
-          onPress={() => snap('camera')}
-          style={({ pressed }) => [styles.cam, { backgroundColor: c.lime, transform: [{ scale: pressed ? 0.94 : 1 }] }]}>
-          {busy === 'camera' ? <ActivityIndicator color={c.ink} /> : <Icon d={CAMERA} color={c.ink} size={26} />}
-        </Pressable>
-      </View>
+    <View style={[styles.bar, { backgroundColor: c.bg, paddingBottom: Math.max(insets.bottom, 12), borderTopColor: c.line }]}>
+      {tab(0)}
+      {tab(1)}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('snapMeal')}
+        onPress={() => snap('camera')}
+        style={({ pressed }) => [styles.cam, { backgroundColor: c.ink, transform: [{ scale: pressed ? 0.94 : 1 }] }]}>
+        {busy === 'camera' ? <ActivityIndicator color={c.onPrimary} /> : <Icon d={CAMERA} color={c.lime} size={28} />}
+      </Pressable>
+      <Item d={BILL} label={t('seeBill')} onPress={() => router.push('/bill')} />
+      {tab(2)}
     </View>
   );
 }
@@ -88,9 +82,8 @@ export default function TabsLayout() {
 }
 
 const styles = StyleSheet.create({
-  wrap: { position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center' },
-  pill: { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 36, paddingLeft: 10, paddingRight: 6, height: 68 },
-  tab: { width: 56, height: 56, alignItems: 'center', justifyContent: 'center', gap: 4 },
+  bar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', paddingTop: 8, borderTopWidth: 1 },
+  tab: { width: 52, height: 48, alignItems: 'center', justifyContent: 'center', gap: 5 },
   dot: { width: 4, height: 4, borderRadius: 2 },
-  cam: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center', marginLeft: 6 },
+  cam: { width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center', marginTop: -26 },
 });

@@ -100,7 +100,7 @@ export default function Settings() {
       <T kind="caption" center>
         {t('disclaimer')}
       </T>
-      <Gap h={110} />
+      <Gap h={24} />
     </Screen>
   );
 }
