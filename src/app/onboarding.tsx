@@ -88,7 +88,7 @@ export default function Onboarding() {
 const styles = StyleSheet.create({
   center: { alignItems: 'center', paddingTop: 28 },
   dots: { flexDirection: 'row', gap: 8, marginBottom: 28 },
-  dot: { height: 14, borderRadius: 7, borderWidth: 2 },
-  blob: { width: 190, height: 190, borderRadius: 95, borderWidth: BORDER, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-6deg' }] },
-  tagline: { paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20, transform: [{ rotate: '2deg' }] },
+  dot: { height: 14, borderRadius: 7, borderWidth: 1.5 },
+  blob: { width: 190, height: 190, borderRadius: 95, borderWidth: BORDER, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-3deg' }] },
+  tagline: { paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20, transform: [{ rotate: '1deg' }] },
 });

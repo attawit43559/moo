@@ -1,4 +1,4 @@
-// "Sticker Pop" design system: cream paper, ink outlines, candy colours, hard offset shadows.
+// "Sticker Pop" design system: cream paper, ink outlines, candy colours, soft shadows.
 // One palette on purpose: the look depends on the cream + ink contrast.
 
 const palette = {
@@ -30,12 +30,12 @@ export function useTheme(): Palette {
   return palette;
 }
 
-/** Thai-first rounded font for text. */
-export const font = 'Mitr, system-ui, sans-serif';
-/** Chunky display font for numbers and Latin headings; Thai glyphs fall back to Mitr. */
-export const displayFont = '"Bricolage Grotesque", Mitr, system-ui, sans-serif';
+/** Thai-first clean font for text. */
+export const font = 'Anuphan, system-ui, sans-serif';
+/** Chunky display font for numbers and Latin headings; Thai glyphs fall back to Anuphan. */
+export const displayFont = '"Bricolage Grotesque", Anuphan, system-ui, sans-serif';
 export const monoFont = '"IBM Plex Mono", Anuphan, ui-monospace, monospace';
 export const radius = 24;
 export const MAX_W = 480;
-export const BORDER = 2.5;
-export const shadow = (n = 4) => ({ boxShadow: `${n}px ${n}px 0 ${palette.ink}` });
+export const BORDER = 1.5;
+export const shadow = (n = 4) => ({ boxShadow: `0 ${n + 2}px ${n * 4}px rgba(27, 27, 27, 0.10)` });

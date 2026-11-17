@@ -52,9 +52,9 @@ export function Pig({ size = 96, mood = 'happy' }: { size?: number; mood?: PigMo
   const ink = '#1B1B1B';
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100">
-      <Path d="M22 30 L30 10 L42 26 Z" fill={dark} stroke={ink} strokeWidth={4} strokeLinejoin="round" />
-      <Path d="M78 30 L70 10 L58 26 Z" fill={dark} stroke={ink} strokeWidth={4} strokeLinejoin="round" />
-      <Circle cx="50" cy="54" r="34" fill={body} stroke={ink} strokeWidth={4} />
+      <Path d="M22 30 L30 10 L42 26 Z" fill={dark} stroke={ink} strokeWidth={3} strokeLinejoin="round" />
+      <Path d="M78 30 L70 10 L58 26 Z" fill={dark} stroke={ink} strokeWidth={3} strokeLinejoin="round" />
+      <Circle cx="50" cy="54" r="34" fill={body} stroke={ink} strokeWidth={3} />
       <Ellipse cx="27" cy="62" rx="5" ry="3.2" fill={dark} />
       <Ellipse cx="73" cy="62" rx="5" ry="3.2" fill={dark} />
       {mood === 'calm' ? (
@@ -73,7 +73,7 @@ export function Pig({ size = 96, mood = 'happy' }: { size?: number; mood?: PigMo
           <Circle cx="62" cy="48" r="4" fill={ink} />
         </>
       )}
-      <Ellipse cx="50" cy="65" rx="13" ry="9" fill={dark} stroke={ink} strokeWidth={3.5} />
+      <Ellipse cx="50" cy="65" rx="13" ry="9" fill={dark} stroke={ink} strokeWidth={2.5} />
       <Circle cx="46" cy="65" r="2.4" fill={ink} />
       <Circle cx="54" cy="65" r="2.4" fill={ink} />
     </Svg>
@@ -85,14 +85,14 @@ export function Bar({ progress, color, height = 18 }: { progress: number; color?
   const c = useTheme();
   const p = Math.max(0, Math.min(1, progress));
   return (
-    <View style={{ height, borderWidth: 2.5, borderColor: c.ink, borderRadius: 12, backgroundColor: c.bg, overflow: 'hidden' }}>
+    <View style={{ height, borderWidth: 1.5, borderColor: c.ink, borderRadius: 12, backgroundColor: c.bg, overflow: 'hidden' }}>
       {p > 0 ? (
         <View
           style={{
             width: `${Math.max(p, 0.04) * 100}%`,
             height: '100%',
             backgroundColor: color ?? c.pink,
-            borderRightWidth: p < 1 ? 2.5 : 0,
+            borderRightWidth: p < 1 ? 1.5 : 0,
             borderColor: c.ink,
           }}
         />

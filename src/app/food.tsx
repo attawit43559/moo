@@ -79,7 +79,7 @@ export default function Food() {
         ) : undefined
       }>
       {photo.current ? (
-        <Sticker style={styles.polaroid} tilt={-2}>
+        <Sticker style={styles.polaroid} tilt={-1}>
           <Image source={{ uri: `data:image/jpeg;base64,${photo.current.base64}` }} style={[styles.photo, { borderColor: c.ink }]} contentFit="cover" />
         </Sticker>
       ) : null}
@@ -182,7 +182,7 @@ export default function Food() {
 
 const styles = StyleSheet.create({
   polaroid: { padding: 10, paddingBottom: 18, marginTop: 6 },
-  photo: { width: '100%', aspectRatio: 4 / 3, borderRadius: 14, borderWidth: 2 },
+  photo: { width: '100%', aspectRatio: 4 / 3, borderRadius: 14, borderWidth: 1.5 },
   center: { alignItems: 'center', paddingVertical: 32 },
   tag: { paddingHorizontal: 14, paddingVertical: 9, borderRadius: 16, borderWidth: BORDER },
 });

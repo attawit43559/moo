@@ -93,7 +93,7 @@ export default function Bill() {
       <Gap h={40} />
       <View
         onLayout={(e) => setW(e.nativeEvent.layout.width)}
-        style={[styles.receiptWrap, { filter: 'drop-shadow(4px 4px 0 #1B1B1B)' } as object]}>
+        style={[styles.receiptWrap, { filter: 'drop-shadow(0 8px 18px rgba(27, 27, 27, 0.12))' } as object]}>
         <View style={[styles.receipt, { backgroundColor: c.card, borderColor: c.ink }]}>
           <View style={styles.pig} pointerEvents="none">
             <Pig size={70} mood={progress >= 1 ? 'proud' : 'happy'} />
@@ -162,7 +162,7 @@ export default function Bill() {
 
 const styles = StyleSheet.create({
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  receiptWrap: { transform: [{ rotate: '-1deg' }] },
+  receiptWrap: {},
   receipt: {
     borderWidth: BORDER,
     borderBottomWidth: 0,
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     paddingTop: 22,
     paddingBottom: 16,
   },
-  pig: { position: 'absolute', left: -18, top: -38, transform: [{ rotate: '-10deg' }] },
+  pig: { position: 'absolute', left: -18, top: -38, transform: [{ rotate: '-6deg' }] },
   item: { flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 6 },
   dash: { borderTopWidth: 1.5, borderStyle: 'dashed', marginVertical: 12 },
   total: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 110,
     bottom: 64,
-    borderWidth: 3,
+    borderWidth: 1.5,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 4,

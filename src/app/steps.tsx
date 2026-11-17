@@ -150,5 +150,5 @@ export default function Steps() {
 
 const styles = StyleSheet.create({
   center: { alignItems: 'center', paddingVertical: 28 },
-  code: { borderRadius: 12, borderWidth: 2, borderStyle: 'dashed', padding: 12 },
+  code: { borderRadius: 12, borderWidth: 1.5, borderStyle: 'dashed', padding: 12 },
 });

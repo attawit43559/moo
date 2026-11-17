@@ -123,10 +123,10 @@ export default function ConnectAi() {
 }
 
 const styles = StyleSheet.create({
-  status: { flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 14, borderWidth: 2, marginTop: 16 },
+  status: { flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 14, borderWidth: 1.5, marginTop: 16 },
   dot: { width: 8, height: 8, borderRadius: 4 },
   step: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 6 },
-  num: { width: 34, height: 34, borderRadius: 17, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  num: { width: 34, height: 34, borderRadius: 17, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
   input: { borderRadius: 18, borderWidth: BORDER, paddingHorizontal: 16, paddingVertical: 14, fontSize: 15 },
-  note: { borderRadius: 16, borderWidth: 2, padding: 12, transform: [{ rotate: '-1deg' }] },
+  note: { borderRadius: 16, borderWidth: 1.5, padding: 12 },
 });

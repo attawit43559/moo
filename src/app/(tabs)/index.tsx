@@ -23,7 +23,7 @@ function Icon({ d, color, size = 24, w = 2.4 }: { d: string; color: string; size
 const CAMERA = 'M4 8.5h2.6l1.6-2.5h7.6l1.6 2.5H20v10.5H4zM12 16.5a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z';
 const GALLERY = 'M4 5h16v14H4zM4 15l4.5-4.5 4 4 2.5-2.5L20 17M15.5 9.5h.01';
 
-const TILTS = [-4, 3, -2, 2.5, -3];
+const TILTS = [-1.5, 1, -1, 1.2, -0.8];
 
 function timeLabel(iso: string, lang: 'th' | 'en') {
   return new Date(iso).toLocaleTimeString(lang === 'th' ? 'th-TH' : 'en-US', { hour: '2-digit', minute: '2-digit' });
@@ -186,7 +186,7 @@ export default function Today() {
           accessibilityRole="button"
           accessibilityLabel={t('snapMeal')}
           onPress={() => snap('camera')}
-          style={[styles.pol, styles.next, { borderColor: c.ink, transform: [{ rotate: meals.length ? '2deg' : '0deg' }] }]}>
+          style={[styles.pol, styles.next, { borderColor: c.ink, transform: [{ rotate: meals.length ? '1deg' : '0deg' }] }]}>
           <T kind="caption" weight="500" center>
             {meals.length ? t('nextMeal') : t('noMeals')}
           </T>
@@ -199,16 +199,16 @@ export default function Today() {
 const styles = StyleSheet.create({
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   date: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20 },
-  hero: { borderRadius: 28, paddingHorizontal: 22, paddingTop: 20, paddingBottom: 16, boxShadow: '5px 5px 0 #1B1B1B' },
-  pig: { position: 'absolute', right: -6, top: -40, transform: [{ rotate: '8deg' }] },
-  bubble: { position: 'absolute', right: 84, top: -26, borderWidth: BORDER, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 5, transform: [{ rotate: '-3deg' }] },
+  hero: { borderRadius: 28, paddingHorizontal: 22, paddingTop: 20, paddingBottom: 16, boxShadow: '0 10px 28px rgba(27, 27, 27, 0.12)' },
+  pig: { position: 'absolute', right: -6, top: -40, transform: [{ rotate: '4deg' }] },
+  bubble: { position: 'absolute', right: 84, top: -26, borderWidth: BORDER, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 5, transform: [{ rotate: '-2deg' }] },
   heroLinks: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   underline: { textDecorationLine: 'underline' },
   tiles: { flexDirection: 'row', gap: 10 },
   tile: { flex: 1, borderWidth: BORDER, borderRadius: 20, padding: 12 },
   meals: { gap: 14, paddingHorizontal: 22, paddingVertical: 14, alignItems: 'flex-start' },
   pol: { width: 124, borderWidth: BORDER, borderRadius: 18, padding: 8, paddingBottom: 10 },
-  img: { height: 88, borderRadius: 12, borderWidth: 2 },
+  img: { height: 88, borderRadius: 12, borderWidth: 1.5 },
   next: { height: 166, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' },
   dock: { flexDirection: 'row', alignItems: 'center', gap: 12 },
 });

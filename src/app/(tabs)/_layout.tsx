@@ -36,7 +36,7 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: c.sub,
         tabBarActiveTintColor: c.ink,
         tabBarLabelStyle: { fontFamily: Platform.OS === 'web' ? font : undefined, fontSize: 12, fontWeight: '500' },
-        tabBarStyle: { backgroundColor: c.bg, borderTopWidth: 2.5, borderTopColor: c.ink, elevation: 0, height: Platform.OS === 'web' ? 66 : undefined, paddingTop: 4 },
+        tabBarStyle: { backgroundColor: c.bg, borderTopWidth: 1.5, borderTopColor: c.ink, elevation: 0, height: Platform.OS === 'web' ? 66 : undefined, paddingTop: 4 },
         sceneStyle: { backgroundColor: c.bg },
       }}>
       <Tabs.Screen name="index" options={{ title: t('tabToday'), tabBarAccessibilityLabel: t('tabToday'), tabBarIcon: ({ color }) => <Icon d={ICONS.today} color={String(color)} /> }} />

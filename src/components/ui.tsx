@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
   segText: { fontSize: 15 },
   rowItem: { flexDirection: 'row', alignItems: 'center', minHeight: 58, paddingVertical: 10, gap: 10 },
   stepper: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  mini: { width: 36, height: 36, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  mini: { width: 36, height: 36, borderRadius: 18, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
   miniText: { fontSize: 20, lineHeight: 22, fontWeight: '600' },
-  tag: { alignSelf: 'flex-start', borderWidth: 2, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 1 },
+  tag: { alignSelf: 'flex-start', borderWidth: 1.5, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 1 },
 });

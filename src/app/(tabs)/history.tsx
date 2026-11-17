@@ -48,7 +48,7 @@ export default function History() {
             <View key={x.key} style={styles.col}>
               <View style={{ height: H * 2, width: '100%', alignItems: 'center' }}>
                 {x.hasData ? (
-                  <View style={{ position: 'absolute', width: 18, height: h, borderRadius: 6, borderWidth: 2, borderColor: c.ink, backgroundColor: pos ? c.pink : c.lime, top: pos ? H - h : H }} />
+                  <View style={{ position: 'absolute', width: 18, height: h, borderRadius: 6, borderWidth: 1.5, borderColor: c.ink, backgroundColor: pos ? c.pink : c.lime, top: pos ? H - h : H }} />
                 ) : (
                   <View style={{ position: 'absolute', width: 6, height: 6, borderRadius: 3, backgroundColor: c.ink, top: H - 3 }} />
                 )}
