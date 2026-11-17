@@ -59,7 +59,7 @@ function PillBar({ state, descriptors, navigateToTab }: BottomTabBarProps) {
           accessibilityRole="button"
           accessibilityLabel={t('snapMeal')}
           onPress={() => snap('camera')}
-          style={({ pressed }) => [styles.cam, { backgroundColor: c.pink, transform: [{ scale: pressed ? 0.94 : 1 }] }]}>
+          style={({ pressed }) => [styles.cam, { backgroundColor: c.lime, transform: [{ scale: pressed ? 0.94 : 1 }] }]}>
           {busy === 'camera' ? <ActivityIndicator color={c.ink} /> : <Icon d={CAMERA} color={c.ink} size={26} />}
         </Pressable>
       </View>

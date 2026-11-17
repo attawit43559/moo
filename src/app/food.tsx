@@ -140,7 +140,7 @@ export default function Food() {
                     <Pressable
                       key={i}
                       onPress={() => setChoice(i)}
-                      style={[styles.tag, { backgroundColor: on ? c.pink : c.card }]}>
+                      style={[styles.tag, { backgroundColor: on ? c.slate : c.card }]}>
                       <T kind="caption" weight={on ? '600' : '400'} color={on ? c.onPrimary : c.ink}>
                         {name(o)}
                       </T>

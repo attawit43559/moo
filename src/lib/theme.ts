@@ -15,7 +15,7 @@ const palette = {
   butter: '#FFF3A6',
   slate: '#D7E2EB',
   mint: '#D6F4E2',
-  primary: '#FFC9D6',
+  primary: '#D7E2EB',
   primarySoft: '#FFE3EA',
   onPrimary: '#111111',
   good: '#1A8F52',
