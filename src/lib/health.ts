@@ -2,8 +2,11 @@ import { Linking, Platform } from 'react-native';
 
 /** Name of the iPhone Shortcut that reads today's steps from Apple Health and opens Moo with ?n=STEPS. */
 export const SHORTCUT_NAME = 'Moo';
-/** iCloud share link of that Shortcut. Empty until the shared copy exists; the app then shows build steps instead. */
-export const SHORTCUT_ICLOUD = '';
+/** Signed Shortcut file served next to the app (public/Moo.shortcut). Opening it on iPhone offers "Add Shortcut". */
+export function shortcutInstallUrl(): string {
+  if (Platform.OS !== 'web') return 'https://attawit43559.github.io/moo/Moo.shortcut';
+  return stepsReturnUrl().replace(/\?n=$/, 'Moo.shortcut');
+}
 
 export const isIOSWeb = () =>
   Platform.OS === 'web' && typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent);

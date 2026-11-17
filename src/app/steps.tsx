@@ -1,13 +1,12 @@
-import * as Clipboard from 'expo-clipboard';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Linking, Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Linking, StyleSheet, View } from 'react-native';
 
 import { Pig } from '@/components/art';
 import { Btn, Gap, Group, Row, Screen, Sticker, T } from '@/components/ui';
 import { todayKey } from '@/lib/energy';
 import { KeyError, QuotaError, readSteps } from '@/lib/gemini';
-import { parseSteps, SHORTCUT_ICLOUD, stepsReturnUrl } from '@/lib/health';
+import { parseSteps, shortcutInstallUrl } from '@/lib/health';
 import { fmt } from '@/lib/i18n';
 import { pickImage } from '@/lib/image';
 import { useStore } from '@/lib/store';
@@ -21,8 +20,6 @@ export default function Steps() {
   const [reading, setReading] = useState(false);
   const [found, setFound] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showShortcut, setShowShortcut] = useState(false);
-  const [copied, setCopied] = useState(false);
   const lang = state.lang;
 
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
@@ -64,11 +61,6 @@ export default function Steps() {
     close();
   };
 
-  const copy = async () => {
-    await Clipboard.setStringAsync(stepsReturnUrl());
-    setCopied(true);
-  };
-
   if (saved != null) {
     return (
       <Screen>
@@ -91,22 +83,7 @@ export default function Steps() {
       <Gap h={28} />
 
       <Group>
-        <Row label={t('viaShortcut')} sub={t('viaShortcutHint')} onPress={() => (SHORTCUT_ICLOUD ? Linking.openURL(SHORTCUT_ICLOUD) : setShowShortcut(!showShortcut))} last={false} />
-        {showShortcut ? (
-          <View style={{ paddingBottom: 16 }}>
-            <T kind="sub" color={c.text}>
-              {t('shortcutSteps')}
-            </T>
-            <Gap h={12} />
-            <View style={[styles.code, { backgroundColor: c.bg, borderColor: c.line }]}>
-              <T kind="caption" style={{ fontFamily: Platform.OS === 'web' ? 'ui-monospace, monospace' : undefined }}>
-                {stepsReturnUrl()}
-              </T>
-            </View>
-            <Gap h={10} />
-            <Btn kind="quiet" label={copied ? t('copied') : t('copyLink')} onPress={copy} />
-          </View>
-        ) : null}
+        <Row label={t('viaShortcut')} sub={t('viaShortcutHint')} onPress={() => Linking.openURL(shortcutInstallUrl())} last={false} />
         <Row label={t('viaScreenshot')} sub={t('viaScreenshotHint')} onPress={fromScreenshot} last />
       </Group>
 
@@ -144,5 +121,4 @@ export default function Steps() {
 
 const styles = StyleSheet.create({
   center: { alignItems: 'center', paddingVertical: 28 },
-  code: { borderRadius: 12, borderWidth: 1.5, borderStyle: 'dashed', padding: 12 },
 });
