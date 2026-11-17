@@ -112,8 +112,8 @@ const th = {
   // steps
   stepsTitle: 'อัปเดตก้าวเดิน',
   stepsIntro: 'เว็บแอปอ่าน Health เองไม่ได้ เลือกวิธีที่สะดวก',
-  viaShortcut: 'iPhone: ใช้คำสั่งลัด (อัตโนมัติ)',
-  viaShortcutHint: 'ตั้งครั้งเดียว กดทีเดียวส่งก้าวจาก Apple Health',
+  viaShortcut: 'iPhone: เชื่อมกับ Apple Health',
+  viaShortcutHint: 'ติดตั้งคำสั่งลัดครั้งเดียว แล้วกดรีเฟรชในหน้าแรกเพื่อดึงก้าวล่าสุดได้ทันที',
   viaScreenshot: 'ถ่าย/เลือกภาพหน้าจอแอปนับก้าว',
   viaScreenshotHint: 'AI อ่านตัวเลขก้าวให้ ใช้ได้ทุกเครื่อง',
   readingSteps: 'กำลังอ่านจำนวนก้าว…',
@@ -122,7 +122,7 @@ const th = {
   stepsSaved: 'บันทึก {n} ก้าวแล้ว',
   shortcutTitle: 'ตั้งค่าคำสั่งลัดบน iPhone',
   shortcutSteps:
-    '1. เปิดแอป "คำสั่งลัด" (Shortcuts) แล้วกด + สร้างใหม่\n2. เพิ่ม "ค้นหาตัวอย่างสุขภาพ" (Find Health Samples) เลือกประเภท "ก้าว" วันนี้\n3. เพิ่ม "คำนวณสถิติ" เลือก "ผลรวม"\n4. เพิ่ม "เปิด URL" แล้ววางลิงก์ด้านล่าง ต่อท้ายด้วยผลรวม\n5. ตั้งชื่อ "Moo ก้าว" และเพิ่มไว้หน้าจอโฮม หรือตั้งอัตโนมัติทุก 2 ทุ่ม',
+    '1. เปิดแอป "คำสั่งลัด" (Shortcuts) แล้วกด + สร้างใหม่\n2. เพิ่ม "ค้นหาตัวอย่างสุขภาพ" (Find Health Samples) เลือกประเภท "ก้าว" วันนี้\n3. เพิ่ม "คำนวณสถิติ" เลือก "ผลรวม"\n4. เพิ่ม "เปิด URL" แล้ววางลิงก์ด้านล่าง ต่อท้ายด้วยผลรวม\n5. ตั้งชื่อว่า "Moo" (ต้องชื่อนี้ ปุ่มรีเฟรชในหน้าแรกจะเรียกใช้ได้)',
   copyLink: 'คัดลอกลิงก์',
   copied: 'คัดลอกแล้ว',
   // ai
@@ -271,8 +271,8 @@ const en: Dict = {
   deleteMeal: 'Delete meal',
   stepsTitle: 'Update steps',
   stepsIntro: "A web app can't read Health directly. Pick whichever is easier.",
-  viaShortcut: 'iPhone: use a Shortcut (automatic)',
-  viaShortcutHint: 'Set up once, then one tap sends steps from Apple Health',
+  viaShortcut: 'iPhone: connect Apple Health',
+  viaShortcutHint: 'Add the Shortcut once, then tap refresh on Today for your latest steps',
   viaScreenshot: 'Screenshot of your step app',
   viaScreenshotHint: 'AI reads the step count. Works on any phone',
   readingSteps: 'Reading your steps…',
@@ -281,7 +281,7 @@ const en: Dict = {
   stepsSaved: 'Saved {n} steps',
   shortcutTitle: 'Set up the iPhone Shortcut',
   shortcutSteps:
-    '1. Open the Shortcuts app and tap + to create one\n2. Add "Find Health Samples", type Steps, date is today\n3. Add "Calculate Statistics", choose Sum\n4. Add "Open URL" and paste the link below, followed by the Sum\n5. Name it "Moo steps" and add it to your Home Screen, or automate it daily at 8 PM',
+    '1. Open the Shortcuts app and tap + to create one\n2. Add "Find Health Samples", type Steps, date is today\n3. Add "Calculate Statistics", choose Sum\n4. Add "Open URL" and paste the link below, followed by the Sum\n5. Name it exactly "Moo" so the refresh button on the home screen can run it',
   copyLink: 'Copy link',
   copied: 'Copied',
   aiTitle: 'Connect your AI',

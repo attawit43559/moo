@@ -1,23 +1,17 @@
 import * as Clipboard from 'expo-clipboard';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, StyleSheet, View } from 'react-native';
 
 import { Pig } from '@/components/art';
 import { Btn, Gap, Group, Row, Screen, Sticker, T } from '@/components/ui';
 import { todayKey } from '@/lib/energy';
 import { KeyError, QuotaError, readSteps } from '@/lib/gemini';
+import { parseSteps, SHORTCUT_ICLOUD, stepsReturnUrl } from '@/lib/health';
 import { fmt } from '@/lib/i18n';
 import { pickImage } from '@/lib/image';
 import { useStore } from '@/lib/store';
 import { useTheme } from '@/lib/theme';
-
-function shortcutLink(): string {
-  if (Platform.OS !== 'web') return 'moo://steps?n=';
-  const { origin, pathname } = window.location;
-  const base = pathname.replace(/\/steps\/?$/, '').replace(/\/$/, '');
-  return `${origin}${base}/steps?n=`;
-}
 
 export default function Steps() {
   const { t, state, setSteps, bumpAi } = useStore();
@@ -36,8 +30,8 @@ export default function Steps() {
   // Arriving from the iPhone Shortcut: /steps?n=8421
   useEffect(() => {
     if (params.n == null || !state.profile) return;
-    const n = Math.round(Number(String(params.n).replace(/[^\d.]/g, '')));
-    if (Number.isFinite(n) && n >= 0) {
+    const n = parseSteps(params.n);
+    if (n != null) {
       setSteps(todayKey(), n, 'shortcut');
       setSaved(n);
       router.replace('/');
@@ -71,7 +65,7 @@ export default function Steps() {
   };
 
   const copy = async () => {
-    await Clipboard.setStringAsync(shortcutLink());
+    await Clipboard.setStringAsync(stepsReturnUrl());
     setCopied(true);
   };
 
@@ -97,8 +91,7 @@ export default function Steps() {
       <Gap h={28} />
 
       <Group>
-        <Row label={t('viaScreenshot')} sub={t('viaScreenshotHint')} onPress={fromScreenshot} />
-        <Row label={t('viaShortcut')} sub={t('viaShortcutHint')} onPress={() => setShowShortcut(!showShortcut)} last={!showShortcut} />
+        <Row label={t('viaShortcut')} sub={t('viaShortcutHint')} onPress={() => (SHORTCUT_ICLOUD ? Linking.openURL(SHORTCUT_ICLOUD) : setShowShortcut(!showShortcut))} last={false} />
         {showShortcut ? (
           <View style={{ paddingBottom: 16 }}>
             <T kind="sub" color={c.text}>
@@ -107,13 +100,14 @@ export default function Steps() {
             <Gap h={12} />
             <View style={[styles.code, { backgroundColor: c.bg, borderColor: c.line }]}>
               <T kind="caption" style={{ fontFamily: Platform.OS === 'web' ? 'ui-monospace, monospace' : undefined }}>
-                {shortcutLink()}
+                {stepsReturnUrl()}
               </T>
             </View>
             <Gap h={10} />
             <Btn kind="quiet" label={copied ? t('copied') : t('copyLink')} onPress={copy} />
           </View>
         ) : null}
+        <Row label={t('viaScreenshot')} sub={t('viaScreenshotHint')} onPress={fromScreenshot} last />
       </Group>
 
       {reading && (

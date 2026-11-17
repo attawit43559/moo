@@ -1,12 +1,13 @@
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
-import { useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { Bar, Pig, PigMood } from '@/components/art';
 import { Gap, Screen, T } from '@/components/ui';
 import { kcalToSteps, summarize, todayKey } from '@/lib/energy';
+import { clearStepsParam, isIOSWeb, parseSteps, runShortcut } from '@/lib/health';
 import { fmt } from '@/lib/i18n';
 import { useSnap } from '@/lib/snap';
 import { useStore } from '@/lib/store';
@@ -24,7 +25,8 @@ const ARROW = 'M5 12h14M13 6l6 6-6 6';
 const GALLERY = 'M4 5h16v14H4zM4 15l4.5-4.5 4 4 2.5-2.5L20 17';
 
 export default function Today() {
-  const { t, state, removeMeal } = useStore();
+  const { t, state, removeMeal, setSteps } = useStore();
+  const params = useLocalSearchParams<{ n?: string }>();
   const c = useTheme();
   const { busy, snap } = useSnap();
   const [armed, setArmed] = useState<string | null>(null);
@@ -44,6 +46,17 @@ export default function Today() {
   const mood: PigMood = done ? 'proud' : progress >= 0.5 ? 'happy' : 'calm';
   const burned = s.baseSoFar + s.walkKcal;
   const net = intake - burned;
+  // The iPhone Shortcut opens Moo as /?n=8421 with today's steps from Apple Health.
+  useEffect(() => {
+    const n = parseSteps(params.n);
+    if (n == null) return;
+    setSteps(todayKey(), n, 'shortcut');
+    router.setParams({ n: undefined });
+    setTimeout(clearStepsParam, 50);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.n]);
+  const linked = Object.values(state.steps).some((e) => e.source === 'shortcut');
+  const refresh = () => (isIOSWeb() && linked ? runShortcut() : router.push('/steps'));
   const mealColors = [c.sky, c.pinkLight, c.mint, c.butter];
 
   return (
@@ -62,7 +75,7 @@ export default function Today() {
           <T kind="body" weight="500">
             {t('walkedToday')}
           </T>
-          <Pressable accessibilityRole="button" accessibilityLabel={t('updateSteps')} onPress={() => router.push('/steps')} style={[styles.round, { backgroundColor: c.bg }]}>
+          <Pressable accessibilityRole="button" accessibilityLabel={t('updateSteps')} onPress={refresh} style={[styles.round, { backgroundColor: c.bg }]}>
             <Icon d={REFRESH} color={c.ink} size={18} />
           </Pressable>
         </View>
