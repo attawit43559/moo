@@ -17,7 +17,6 @@ const NET_WALK_KCAL_PER_KG_KM = 0.5;
 const SEDENTARY_FACTOR = 1.2;
 /** Daily deficit used for the weight-loss goal. */
 const LOSE_DEFICIT_KCAL = 400;
-export const MIN_STEP_GOAL = 6000;
 export const MAX_STEP_GOAL = 20000;
 
 /** Mifflin-St Jeor basal metabolic rate, kcal/day. */
@@ -65,8 +64,14 @@ export interface DaySummary {
   walkKcal: number;
   steps: number;
   budget: number;
-  /** Steps needed so intake beyond the budget is walked off, clamped to sane limits. */
+  /** Energy the body has burned at rest up to now; food up to this amount owes no steps. */
+  budgetSoFar: number;
+  /** Today's bill in steps: food eaten beyond what the body has burned so far, capped at MAX_STEP_GOAL. 0 when nothing is owed. */
   stepGoal: number;
+  /** Steps still owed right now: stepGoal minus steps walked. */
+  stepsLeft: number;
+  /** Real-time net energy: intake − (base so far + walking). Negative = deficit. */
+  netNow: number;
   /** intake − base − walking, for the full day. Negative = deficit. */
   balance: number;
   /** Extra kcal beyond the step cap that walking alone can't cover. */
@@ -76,20 +81,27 @@ export interface DaySummary {
 export function summarize(p: Profile, intake: number, steps: number, now?: Date): DaySummary {
   const base = baseBurn(p);
   const budget = dailyBudget(p);
-  const surplus = Math.max(0, intake - budget);
-  const raw = kcalToSteps(p, surplus);
-  const stepGoal = Math.min(MAX_STEP_GOAL, Math.max(MIN_STEP_GOAL, raw));
-  const overCap = raw > MAX_STEP_GOAL ? surplus - stepsToKcal(p, MAX_STEP_GOAL) : 0;
-  const walkKcal = stepsToKcal(p, steps);
   const frac = now ? dayFraction(now) : 1;
+  const baseSoFar = Math.round(base * frac);
+  // Steps follow the plain energy balance (eaten − burned so far), so a negative net never owes steps.
+  const budgetSoFar = baseSoFar;
+  // Real time: only what the body has actually burned up to now offsets the food eaten.
+  const owedKcal = Math.max(0, intake - budgetSoFar);
+  const raw = kcalToSteps(p, owedKcal);
+  const stepGoal = Math.min(MAX_STEP_GOAL, raw);
+  const overCap = raw > MAX_STEP_GOAL ? owedKcal - stepsToKcal(p, MAX_STEP_GOAL) : 0;
+  const walkKcal = stepsToKcal(p, steps);
   return {
     intake,
     base,
-    baseSoFar: Math.round(base * frac),
+    baseSoFar,
     walkKcal,
     steps,
     budget,
+    budgetSoFar,
     stepGoal,
+    stepsLeft: Math.max(0, stepGoal - steps),
+    netNow: intake - baseSoFar - walkKcal,
     balance: intake - base - walkKcal,
     overCap: Math.round(overCap),
   };

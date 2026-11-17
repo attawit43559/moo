@@ -40,12 +40,11 @@ export default function Today() {
   const steps = stepEntry?.count ?? 0;
   const now = new Date();
   const s = summarize(profile, intake, steps, now);
-  const progress = s.stepGoal ? steps / s.stepGoal : 0;
-  const left = Math.max(0, s.stepGoal - steps);
-  const done = progress >= 1;
+  const progress = s.stepGoal ? steps / s.stepGoal : 1;
+  const left = s.stepsLeft;
+  const done = left === 0;
   const mood: PigMood = done ? 'proud' : progress >= 0.5 ? 'happy' : 'calm';
-  const burned = s.baseSoFar + s.walkKcal;
-  const net = intake - burned;
+  const net = s.netNow;
   // The iPhone Shortcut opens Moo as /?n=8421 with today's steps from Apple Health.
   useEffect(() => {
     const n = parseSteps(params.n);
@@ -81,7 +80,7 @@ export default function Today() {
         </View>
         <T kind="hero">{fmt(steps, lang)}</T>
         <T kind="sub" color={c.text}>
-          {done ? t('goalLineDone', { goal: fmt(s.stepGoal, lang) }) : t('goalLine', { goal: fmt(s.stepGoal, lang), n: fmt(left, lang) })}
+          {done ? t('noStepsOwed') : t('stepsOwed', { n: fmt(left, lang) })}
         </T>
         <Gap h={16} />
         <Bar progress={progress} />

@@ -5,7 +5,7 @@ import Svg, { Path } from 'react-native-svg';
 
 import { Bar, Pig } from '@/components/art';
 import { Btn, Gap, Screen, T } from '@/components/ui';
-import { kcalToSteps, MAX_STEP_GOAL, MIN_STEP_GOAL, strideM, summarize, todayKey } from '@/lib/energy';
+import { kcalToSteps, MAX_STEP_GOAL, strideM, summarize, todayKey } from '@/lib/energy';
 import { fmt } from '@/lib/i18n';
 import { useStore } from '@/lib/store';
 import { BORDER, monoFont, useTheme } from '@/lib/theme';
@@ -52,15 +52,14 @@ export default function Bill() {
 
   const mealSteps = meals.map((m) => kcalToSteps(profile, m.kcal));
   const eatenSteps = mealSteps.reduce((a, b) => a + b, 0);
-  const bodySteps = Math.min(eatenSteps, kcalToSteps(profile, s.budget));
+  const bodySteps = Math.min(eatenSteps, kcalToSteps(profile, s.budgetSoFar));
   const subtotal = eatenSteps - bodySteps;
-  const minAdd = Math.max(0, MIN_STEP_GOAL - subtotal);
   const capCut = Math.max(0, subtotal - MAX_STEP_GOAL);
   const total = s.stepGoal;
-  const due = Math.max(0, total - steps);
-  const progress = total ? steps / total : 0;
+  const due = s.stepsLeft;
+  const progress = total ? steps / total : 1;
   const stamp = progress >= 1 ? t('stampDone') : progress >= 0.8 ? t('stampClose') : null;
-  const net = intake - s.baseSoFar - s.walkKcal;
+  const net = s.netNow;
   const km = ((due * strideM(profile)) / 1000).toFixed(1);
   const dayNo = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000);
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
@@ -111,11 +110,10 @@ export default function Bill() {
           {bodySteps > 0 ? (
             <Item
               label={t('billBody')}
-              hint={profile.goal === 'lose' ? t('billBodyHintLose') : t('billBodyHint')}
+              hint={t('billBodyHint')}
               value={`−${fmt(bodySteps, lang)}`}
             />
           ) : null}
-          {minAdd > 0 ? <Item label={t('billMin')} hint={t('billMinHint', { n: fmt(MIN_STEP_GOAL, lang) })} value={`+${fmt(minAdd, lang)}`} /> : null}
           {capCut > 0 ? <Item label={t('billCap')} hint={t('billCapHint', { n: fmt(MAX_STEP_GOAL, lang) })} value={`−${fmt(capCut, lang)}`} /> : null}
           <Dash />
           <View style={styles.total}>
