@@ -16,6 +16,7 @@ function Nav() {
         <Stack.Screen name="connect-ai" options={{ presentation: 'modal' }} />
         <Stack.Screen name="food" options={{ presentation: 'modal' }} />
         <Stack.Screen name="steps" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="bill" options={{ presentation: 'modal' }} />
       </Stack>
     </>
   );

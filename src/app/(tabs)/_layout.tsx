@@ -4,11 +4,11 @@ import { Platform, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { useStore } from '@/lib/store';
-import { useTheme } from '@/lib/theme';
+import { font, useTheme } from '@/lib/theme';
 
 function Icon({ d, color }: { d: string; color: string }) {
   return (
-    <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
       <Path d={d} />
     </Svg>
   );
@@ -34,9 +34,9 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarInactiveTintColor: c.sub,
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: c.text,
-        tabBarStyle: { backgroundColor: c.bg, borderTopWidth: 0, elevation: 0, height: Platform.OS === 'web' ? 60 : undefined },
+        tabBarActiveTintColor: c.ink,
+        tabBarLabelStyle: { fontFamily: Platform.OS === 'web' ? font : undefined, fontSize: 12, fontWeight: '500' },
+        tabBarStyle: { backgroundColor: c.bg, borderTopWidth: 2.5, borderTopColor: c.ink, elevation: 0, height: Platform.OS === 'web' ? 66 : undefined, paddingTop: 4 },
         sceneStyle: { backgroundColor: c.bg },
       }}>
       <Tabs.Screen name="index" options={{ title: t('tabToday'), tabBarAccessibilityLabel: t('tabToday'), tabBarIcon: ({ color }) => <Icon d={ICONS.today} color={String(color)} /> }} />

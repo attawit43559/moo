@@ -4,10 +4,10 @@ import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
-import { Btn, Gap, Screen, T } from '@/components/ui';
+import { Btn, Gap, Screen, Sticker, T } from '@/components/ui';
 import { validateKey } from '@/lib/gemini';
 import { useStore } from '@/lib/store';
-import { font, useTheme } from '@/lib/theme';
+import { BORDER, font, useTheme } from '@/lib/theme';
 
 const STUDIO = 'https://aistudio.google.com/app/apikey';
 
@@ -58,25 +58,29 @@ export default function ConnectAi() {
       <T kind="sub">{t('aiIntro')}</T>
 
       {state.apiKey ? (
-        <View style={[styles.status, { backgroundColor: c.goodSoft }]}>
-          <View style={[styles.dot, { backgroundColor: c.good }]} />
-          <T kind="body" weight="600" color={c.good}>
+        <View style={[styles.status, { backgroundColor: c.lime, borderColor: c.ink }]}>
+          <View style={[styles.dot, { backgroundColor: c.ink }]} />
+          <T kind="body" weight="600" color={c.ink}>
             {t('aiConnected')}
           </T>
         </View>
       ) : null}
 
-      <Gap h={32} />
-      {[t('aiStep1'), t('aiStep2'), t('aiStep3')].map((s, i) => (
-        <View key={i} style={styles.step}>
-          <T kind="title" color={c.sub} style={{ width: 24 }}>
-            {i + 1}
-          </T>
-          <T kind="body" style={{ flex: 1 }}>
-            {s}
-          </T>
-        </View>
-      ))}
+      <Gap h={24} />
+      <Sticker style={{ gap: 4 }}>
+        {[t('aiStep1'), t('aiStep2'), t('aiStep3')].map((s, i) => (
+          <View key={i} style={styles.step}>
+            <View style={[styles.num, { borderColor: c.ink, backgroundColor: [c.butter, c.sky, c.pink][i] }]}>
+              <T kind="title" color={c.ink}>
+                {i + 1}
+              </T>
+            </View>
+            <T kind="body" style={{ flex: 1 }}>
+              {s}
+            </T>
+          </View>
+        ))}
+      </Sticker>
 
       <Gap h={20} />
       <TextInput
@@ -89,7 +93,7 @@ export default function ConnectAi() {
         autoCapitalize="none"
         autoCorrect={false}
         secureTextEntry
-        style={[styles.input, { color: c.text, backgroundColor: c.fill, fontFamily: Platform.OS === 'web' ? font : undefined }]}
+        style={[styles.input, { color: c.text, backgroundColor: c.card, borderColor: c.ink, fontFamily: Platform.OS === 'web' ? font : undefined }]}
       />
       {error ? (
         <>
@@ -100,8 +104,12 @@ export default function ConnectAi() {
         </>
       ) : null}
 
-      <Gap h={28} />
-      <T kind="caption">{t('aiNoCard')}</T>
+      <Gap h={24} />
+      <View style={[styles.note, { backgroundColor: c.butter, borderColor: c.ink }]}>
+        <T kind="caption" color={c.ink} weight="500">
+          {t('aiNoCard')}
+        </T>
+      </View>
       <Gap h={8} />
       <T kind="caption">{t('aiPrivacy')}</T>
       {state.apiKey ? (
@@ -115,8 +123,10 @@ export default function ConnectAi() {
 }
 
 const styles = StyleSheet.create({
-  status: { flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 14, marginTop: 16 },
+  status: { flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 14, borderWidth: 2, marginTop: 16 },
   dot: { width: 8, height: 8, borderRadius: 4 },
-  step: { flexDirection: 'row', gap: 12, paddingVertical: 8 },
-  input: { borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, fontSize: 15 },
+  step: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 6 },
+  num: { width: 34, height: 34, borderRadius: 17, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  input: { borderRadius: 18, borderWidth: BORDER, paddingHorizontal: 16, paddingVertical: 14, fontSize: 15 },
+  note: { borderRadius: 16, borderWidth: 2, padding: 12, transform: [{ rotate: '-1deg' }] },
 });

@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { Gap, Screen, T } from '@/components/ui';
+import { Gap, Screen, Sticker, T } from '@/components/ui';
 import { summarize, todayKey } from '@/lib/energy';
 import { fmt } from '@/lib/i18n';
 import { useStore } from '@/lib/store';
@@ -30,16 +30,16 @@ export default function History() {
   return (
     <Screen>
       <T kind="display">{t('historyTitle')}</T>
-      <Gap h={24} />
-      <T kind="caption">
-        {t('net')} · kcal/{lang === 'th' ? 'วัน' : 'day'}
-      </T>
-      <T kind="hero" color={withData.length ? (avg <= 0 ? c.good : c.warn) : c.sub}>
-        {withData.length ? (avg > 0 ? '+' : '−') + fmt(Math.abs(avg), lang) : '—'}
-      </T>
+      <Gap h={20} />
+      <Sticker color={!withData.length ? c.card : avg <= 0 ? c.lime : c.pinkLight} style={{ borderRadius: 28, padding: 20 }}>
+        <T kind="body" weight="500">
+          {t('net')} · kcal/{lang === 'th' ? 'วัน' : 'day'}
+        </T>
+        <T kind="hero">{withData.length ? (avg > 0 ? '+' : '−') + fmt(Math.abs(avg), lang) : '—'}</T>
+      </Sticker>
 
-      <Gap h={24} />
-      <View style={[styles.chart, { height: H * 2 + 28 }]}>
+      <Gap h={18} />
+      <Sticker style={[styles.chart, { height: H * 2 + 60 }]}>
         <View style={[styles.zero, { top: H, backgroundColor: c.line }]} />
         {days.map((x) => {
           const h = x.hasData ? Math.max(4, (Math.abs(x.s.balance) / maxAbs) * H) : 0;
@@ -48,23 +48,24 @@ export default function History() {
             <View key={x.key} style={styles.col}>
               <View style={{ height: H * 2, width: '100%', alignItems: 'center' }}>
                 {x.hasData ? (
-                  <View style={{ position: 'absolute', width: 14, height: h, borderRadius: 7, backgroundColor: pos ? c.warn : c.good, top: pos ? H - h : H }} />
+                  <View style={{ position: 'absolute', width: 18, height: h, borderRadius: 6, borderWidth: 2, borderColor: c.ink, backgroundColor: pos ? c.pink : c.lime, top: pos ? H - h : H }} />
                 ) : (
-                  <View style={{ position: 'absolute', width: 4, height: 4, borderRadius: 2, backgroundColor: c.line, top: H - 2 }} />
+                  <View style={{ position: 'absolute', width: 6, height: 6, borderRadius: 3, backgroundColor: c.ink, top: H - 3 }} />
                 )}
               </View>
-              <T kind="caption">{x.d.toLocaleDateString(loc, { weekday: 'narrow' })}</T>
+              <T kind="caption" color={c.ink}>{x.d.toLocaleDateString(loc, { weekday: 'narrow' })}</T>
             </View>
           );
         })}
-      </View>
+      </Sticker>
 
-      <Gap h={28} />
+      <Gap h={18} />
+      <Sticker style={{ paddingVertical: 4 }}>
       {days
         .slice()
         .reverse()
         .map((x, i) => (
-          <View key={x.key} style={[styles.row, i < 6 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: c.line }]}>
+          <View key={x.key} style={[styles.row, i < 6 && { borderBottomWidth: 1.5, borderStyle: 'dashed', borderBottomColor: c.ink }]}>
             <View style={{ flex: 1 }}>
               <T kind="body" weight="500">
                 {x.d.toLocaleDateString(loc, { weekday: 'short', day: 'numeric', month: 'short' })}
@@ -78,13 +79,14 @@ export default function History() {
             </T>
           </View>
         ))}
+      </Sticker>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   chart: { flexDirection: 'row' },
-  zero: { position: 'absolute', left: 0, right: 0, height: StyleSheet.hairlineWidth },
+  zero: { position: 'absolute', left: 16, right: 16, height: 2, marginTop: 16 },
   col: { flex: 1, alignItems: 'center' },
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14 },
 });

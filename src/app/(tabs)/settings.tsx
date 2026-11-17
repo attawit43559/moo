@@ -51,7 +51,7 @@ export default function Settings() {
       <T kind="display">{t('tabSettings')}</T>
       <Gap h={24} />
 
-      <T kind="caption" style={{ marginLeft: 4, marginBottom: 8 }}>
+      <T kind="title" style={{ marginBottom: 10 }}>
         {t('language')}
       </T>
       <LangSwitch />
@@ -67,7 +67,7 @@ export default function Settings() {
         />
       </Group>
 
-      <T kind="caption" style={{ marginLeft: 4, marginBottom: 8 }}>
+      <T kind="title" style={{ marginBottom: 10 }}>
         {t('profile')}
       </T>
       <ProfileFields value={p} onChange={(np) => update((s) => ({ ...s, profile: np }))} />

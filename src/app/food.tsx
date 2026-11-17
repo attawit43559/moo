@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { Pig } from '@/components/art';
-import { Btn, Gap, Screen, Segmented, T } from '@/components/ui';
+import { Btn, Gap, Screen, Segmented, Sticker, T } from '@/components/ui';
 import { kcalToSteps, todayKey } from '@/lib/energy';
 import { analyzeFood, FoodGuess, FoodResult, KeyError, QuotaError } from '@/lib/gemini';
 import { fmt } from '@/lib/i18n';
 import { Picked } from '@/lib/image';
 import { getPending } from '@/lib/pending';
 import { newId, useStore } from '@/lib/store';
-import { useTheme } from '@/lib/theme';
+import { BORDER, shadow, useTheme } from '@/lib/theme';
 
 export default function Food() {
   const { t, state, addMeal, bumpAi } = useStore();
@@ -79,12 +79,16 @@ export default function Food() {
         ) : undefined
       }>
       {photo.current ? (
-        <Image source={{ uri: `data:image/jpeg;base64,${photo.current.base64}` }} style={styles.photo} contentFit="cover" />
+        <Sticker style={styles.polaroid} tilt={-2}>
+          <Image source={{ uri: `data:image/jpeg;base64,${photo.current.base64}` }} style={[styles.photo, { borderColor: c.ink }]} contentFit="cover" />
+        </Sticker>
       ) : null}
 
       {!result && !error && (
         <View style={styles.center}>
-          <ActivityIndicator color={c.sub} />
+          <Pig size={72} mood="calm" />
+          <Gap h={10} />
+          <ActivityIndicator color={c.ink} />
           <Gap h={10} />
           <T kind="sub">{t('analyzing')}</T>
         </View>
@@ -105,32 +109,39 @@ export default function Food() {
 
       {ok && (
         <>
-          <Gap h={28} />
-          <T kind="sub" center>
-            {name(g)}
-          </T>
-          <T kind="hero" center color={c.primary}>
-            {fmt(steps, lang)}
-          </T>
-          <T kind="sub" center>
-            {t('stepsUnit')} · {fmt(kcal, lang)} kcal
-          </T>
-          <T kind="caption" center>
-            {t('range', { lo: fmt(g.kcalLow * factor, lang), hi: fmt(g.kcalHigh * factor, lang) })}
-          </T>
+          <Gap h={22} />
+          <Sticker color={c.butter} style={{ alignItems: 'center', paddingVertical: 18 }}>
+            <T kind="title" center>
+              {name(g)}
+            </T>
+            <T kind="hero" center>
+              {fmt(steps, lang)}
+            </T>
+            <T kind="body" center weight="500">
+              {t('stepsUnit')} · {fmt(kcal, lang)} kcal
+            </T>
+            <T kind="caption" center color={c.ink}>
+              {t('range', { lo: fmt(g.kcalLow * factor, lang), hi: fmt(g.kcalHigh * factor, lang) })}
+            </T>
+          </Sticker>
 
           {options.length > 1 && (
             <>
-              <Gap h={28} />
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+              <Gap h={22} />
+              <T kind="title">{t('isItThis')}</T>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{ marginHorizontal: -22 }}
+                contentContainerStyle={{ gap: 10, paddingHorizontal: 22, paddingVertical: 10 }}>
                 {options.map((o, i) => {
                   const on = choice === i;
                   return (
                     <Pressable
                       key={i}
                       onPress={() => setChoice(i)}
-                      style={[styles.tag, { backgroundColor: on ? c.text : c.fill }]}>
-                      <T kind="caption" weight="600" color={on ? c.bg : c.text}>
+                      style={[styles.tag, { backgroundColor: on ? c.lime : c.card, borderColor: c.ink }, on && shadow(3)]}>
+                      <T kind="caption" weight={on ? '600' : '400'} color={c.ink}>
                         {name(o)}
                       </T>
                     </Pressable>
@@ -140,8 +151,8 @@ export default function Food() {
             </>
           )}
 
-          <Gap h={24} />
-          <T kind="caption">{t('portion')}</T>
+          <Gap h={14} />
+          <T kind="title">{t('portion')}</T>
           <Gap h={8} />
           <Segmented
             options={[
@@ -152,8 +163,8 @@ export default function Food() {
             value={portion}
             onChange={setPortion}
           />
-          <Gap h={16} />
-          <T kind="caption">{t('ate')}</T>
+          <Gap h={18} />
+          <T kind="title">{t('ate')}</T>
           <Gap h={8} />
           <Segmented
             options={[
@@ -170,7 +181,8 @@ export default function Food() {
 }
 
 const styles = StyleSheet.create({
-  photo: { width: '100%', aspectRatio: 4 / 3, borderRadius: 28 },
+  polaroid: { padding: 10, paddingBottom: 18, marginTop: 6 },
+  photo: { width: '100%', aspectRatio: 4 / 3, borderRadius: 14, borderWidth: 2 },
   center: { alignItems: 'center', paddingVertical: 32 },
-  tag: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 16 },
+  tag: { paddingHorizontal: 14, paddingVertical: 9, borderRadius: 16, borderWidth: BORDER },
 });

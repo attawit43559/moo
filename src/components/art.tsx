@@ -45,42 +45,58 @@ export function Ring({
 
 export type PigMood = 'happy' | 'calm' | 'proud';
 
-/** Moo the pig. Simple geometric mascot drawn in SVG. */
+/** Moo the pig, drawn as an outlined sticker. */
 export function Pig({ size = 96, mood = 'happy' }: { size?: number; mood?: PigMood }) {
-  const body = '#F7A8B3';
-  const dark = '#E07888';
-  const ink = '#3A2A2D';
+  const body = '#FFB3C7';
+  const dark = '#FF8FB1';
+  const ink = '#1B1B1B';
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100">
-      {/* ears */}
-      <Path d="M22 30 L30 10 L42 26 Z" fill={dark} />
-      <Path d="M78 30 L70 10 L58 26 Z" fill={dark} />
-      {/* head */}
-      <Circle cx="50" cy="52" r="36" fill={body} />
-      {/* cheeks */}
-      <Ellipse cx="26" cy="62" rx="6" ry="4" fill={dark} opacity={0.35} />
-      <Ellipse cx="74" cy="62" rx="6" ry="4" fill={dark} opacity={0.35} />
-      {/* eyes */}
+      <Path d="M22 30 L30 10 L42 26 Z" fill={dark} stroke={ink} strokeWidth={4} strokeLinejoin="round" />
+      <Path d="M78 30 L70 10 L58 26 Z" fill={dark} stroke={ink} strokeWidth={4} strokeLinejoin="round" />
+      <Circle cx="50" cy="54" r="34" fill={body} stroke={ink} strokeWidth={4} />
+      <Ellipse cx="27" cy="62" rx="5" ry="3.2" fill={dark} />
+      <Ellipse cx="73" cy="62" rx="5" ry="3.2" fill={dark} />
       {mood === 'calm' ? (
         <>
-          <Path d="M32 46 Q37 50 42 46" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
-          <Path d="M58 46 Q63 50 68 46" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+          <Path d="M33 48 Q38 52 43 48" stroke={ink} strokeWidth={3.5} fill="none" strokeLinecap="round" />
+          <Path d="M57 48 Q62 52 67 48" stroke={ink} strokeWidth={3.5} fill="none" strokeLinecap="round" />
         </>
       ) : mood === 'proud' ? (
         <>
-          <Path d="M32 48 Q37 42 42 48" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
-          <Path d="M58 48 Q63 42 68 48" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+          <Path d="M33 50 Q38 43 43 50" stroke={ink} strokeWidth={3.5} fill="none" strokeLinecap="round" />
+          <Path d="M57 50 Q62 43 67 50" stroke={ink} strokeWidth={3.5} fill="none" strokeLinecap="round" />
         </>
       ) : (
         <>
-          <Circle cx="37" cy="46" r="4" fill={ink} />
-          <Circle cx="63" cy="46" r="4" fill={ink} />
+          <Circle cx="38" cy="48" r="4" fill={ink} />
+          <Circle cx="62" cy="48" r="4" fill={ink} />
         </>
       )}
-      {/* snout */}
-      <Ellipse cx="50" cy="64" rx="15" ry="11" fill={dark} />
-      <Ellipse cx="45" cy="64" rx="3" ry="4.5" fill={ink} opacity={0.8} />
-      <Ellipse cx="55" cy="64" rx="3" ry="4.5" fill={ink} opacity={0.8} />
+      <Ellipse cx="50" cy="65" rx="13" ry="9" fill={dark} stroke={ink} strokeWidth={3.5} />
+      <Circle cx="46" cy="65" r="2.4" fill={ink} />
+      <Circle cx="54" cy="65" r="2.4" fill={ink} />
     </Svg>
+  );
+}
+
+/** Outlined progress bar, as on the home hero card. */
+export function Bar({ progress, color, height = 18 }: { progress: number; color?: string; height?: number }) {
+  const c = useTheme();
+  const p = Math.max(0, Math.min(1, progress));
+  return (
+    <View style={{ height, borderWidth: 2.5, borderColor: c.ink, borderRadius: 12, backgroundColor: c.bg, overflow: 'hidden' }}>
+      {p > 0 ? (
+        <View
+          style={{
+            width: `${Math.max(p, 0.04) * 100}%`,
+            height: '100%',
+            backgroundColor: color ?? c.pink,
+            borderRightWidth: p < 1 ? 2.5 : 0,
+            borderColor: c.ink,
+          }}
+        />
+      ) : null}
+    </View>
   );
 }

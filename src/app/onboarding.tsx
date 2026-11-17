@@ -7,7 +7,7 @@ import { defaultProfile, GoalFields, LangSwitch, ProfileFields } from '@/compone
 import { Btn, Gap, Screen, T } from '@/components/ui';
 import { Profile } from '@/lib/energy';
 import { useStore } from '@/lib/store';
-import { useTheme } from '@/lib/theme';
+import { BORDER, shadow, useTheme } from '@/lib/theme';
 
 export default function Onboarding() {
   const { t, update } = useStore();
@@ -30,14 +30,22 @@ export default function Onboarding() {
       }>
       <View style={styles.dots}>
         {[0, 1, 2].map((i) => (
-          <View key={i} style={[styles.dot, { backgroundColor: i <= step ? c.text : c.line, width: i === step ? 20 : 6 }]} />
+          <View key={i} style={[styles.dot, { borderColor: c.ink, backgroundColor: i < step ? c.ink : i === step ? c.pink : c.card, width: i === step ? 34 : 14 }]} />
         ))}
       </View>
 
       {step === 0 && (
         <View style={styles.center}>
-          <Pig size={120} />
-          <Gap h={28} />
+          <View style={[styles.blob, { backgroundColor: c.lime, borderColor: c.ink }, shadow(5)]}>
+            <Pig size={130} />
+          </View>
+          <Gap h={14} />
+          <View style={[styles.tagline, { backgroundColor: c.ink }]}>
+            <T kind="caption" color={c.bg} weight="500">
+              {t('appTagline')}
+            </T>
+          </View>
+          <Gap h={22} />
           <T kind="display" center>
             {t('welcomeTitle')}
           </T>
@@ -78,7 +86,9 @@ export default function Onboarding() {
 }
 
 const styles = StyleSheet.create({
-  center: { alignItems: 'center', paddingTop: 48 },
-  dots: { flexDirection: 'row', gap: 6, marginBottom: 28 },
-  dot: { height: 6, borderRadius: 3 },
+  center: { alignItems: 'center', paddingTop: 28 },
+  dots: { flexDirection: 'row', gap: 8, marginBottom: 28 },
+  dot: { height: 14, borderRadius: 7, borderWidth: 2 },
+  blob: { width: 190, height: 190, borderRadius: 95, borderWidth: BORDER, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-6deg' }] },
+  tagline: { paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20, transform: [{ rotate: '2deg' }] },
 });

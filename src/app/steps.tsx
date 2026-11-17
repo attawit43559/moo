@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 
 import { Pig } from '@/components/art';
-import { Btn, Gap, Group, Row, Screen, T } from '@/components/ui';
+import { Btn, Gap, Group, Row, Screen, Sticker, T } from '@/components/ui';
 import { todayKey } from '@/lib/energy';
 import { KeyError, QuotaError, readSteps } from '@/lib/gemini';
 import { fmt } from '@/lib/i18n';
@@ -105,7 +105,7 @@ export default function Steps() {
               {t('shortcutSteps')}
             </T>
             <Gap h={12} />
-            <View style={[styles.code, { backgroundColor: c.fill }]}>
+            <View style={[styles.code, { backgroundColor: c.bg, borderColor: c.ink }]}>
               <T kind="caption" style={{ fontFamily: Platform.OS === 'web' ? 'ui-monospace, monospace' : undefined }}>
                 {shortcutLink()}
               </T>
@@ -118,7 +118,7 @@ export default function Steps() {
 
       {reading && (
         <View style={styles.center}>
-          <ActivityIndicator color={c.sub} />
+          <ActivityIndicator color={c.ink} />
           <Gap h={8} />
           <T kind="sub">{t('readingSteps')}</T>
         </View>
@@ -129,17 +129,17 @@ export default function Steps() {
         </T>
       )}
       {found != null && (
-        <View style={styles.center}>
+        <Sticker color={c.lime} style={{ alignItems: 'center', paddingVertical: 20 }}>
           <T kind="hero">{fmt(found, lang)}</T>
-          <T kind="sub">
+          <T kind="body" weight="500">
             {t('stepsUnit')} · {t('isThisRight')}
           </T>
-          <Gap h={20} />
+          <Gap h={18} />
           <View style={{ flexDirection: 'row', gap: 10, alignSelf: 'stretch' }}>
             <Btn kind="quiet" label={t('retry')} onPress={fromScreenshot} style={{ flex: 1 }} />
             <Btn label={t('save')} onPress={confirm} style={{ flex: 2 }} />
           </View>
-        </View>
+        </Sticker>
       )}
 
       <Gap h={12} />
@@ -150,5 +150,5 @@ export default function Steps() {
 
 const styles = StyleSheet.create({
   center: { alignItems: 'center', paddingVertical: 28 },
-  code: { borderRadius: 12, padding: 12 },
+  code: { borderRadius: 12, borderWidth: 2, borderStyle: 'dashed', padding: 12 },
 });

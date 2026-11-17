@@ -13,9 +13,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { font, MAX_W, radius, useTheme } from '@/lib/theme';
+import { BORDER, displayFont, font, MAX_W, radius, shadow, useTheme } from '@/lib/theme';
 
-const fontFamily = Platform.OS === 'web' ? font : undefined;
+const web = Platform.OS === 'web';
+const bodyFamily = web ? font : undefined;
+const displayFamily = web ? displayFont : undefined;
 
 export function Screen({ children, footer }: { children: ReactNode; footer?: ReactNode }) {
   const c = useTheme();
@@ -24,12 +26,12 @@ export function Screen({ children, footer }: { children: ReactNode; footer?: Rea
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.inner}>{children}</View>
       </ScrollView>
-      {footer ? <View style={[styles.footer, { backgroundColor: c.bg }]}>{footer}</View> : null}
+      {footer ? <View style={styles.footer}>{footer}</View> : null}
     </SafeAreaView>
   );
 }
 
-type TextKind = 'hero' | 'display' | 'title' | 'body' | 'sub' | 'caption';
+type TextKind = 'hero' | 'display' | 'title' | 'body' | 'sub' | 'caption' | 'num';
 
 export function T({
   children,
@@ -48,10 +50,11 @@ export function T({
 }) {
   const c = useTheme();
   const muted = kind === 'sub' || kind === 'caption';
+  const display = kind === 'hero' || kind === 'display' || kind === 'num';
   return (
     <Text
       style={[
-        { fontFamily, color: color ?? (muted ? c.sub : c.text) },
+        { fontFamily: display ? displayFamily : bodyFamily, color: color ?? (muted ? c.sub : c.text) },
         textStyles[kind],
         weight ? { fontWeight: weight } : null,
         center && { textAlign: 'center' },
@@ -59,6 +62,35 @@ export function T({
       ]}>
       {children}
     </Text>
+  );
+}
+
+/** White (or coloured) card with an ink outline and a hard offset shadow. */
+export function Sticker({
+  children,
+  color,
+  style,
+  flat,
+  tilt,
+}: {
+  children: ReactNode;
+  color?: string;
+  style?: StyleProp<ViewStyle>;
+  flat?: boolean;
+  tilt?: number;
+}) {
+  const c = useTheme();
+  return (
+    <View
+      style={[
+        styles.sticker,
+        { backgroundColor: color ?? c.card, borderColor: c.ink },
+        !flat && shadow(4),
+        tilt ? { transform: [{ rotate: `${tilt}deg` }] } : null,
+        style,
+      ]}>
+      {children}
+    </View>
   );
 }
 
@@ -73,15 +105,15 @@ export function Btn({
 }: {
   label: string;
   onPress: () => void;
-  kind?: 'primary' | 'quiet' | 'ghost' | 'danger';
+  kind?: 'primary' | 'quiet' | 'ghost' | 'danger' | 'lime';
   loading?: boolean;
   disabled?: boolean;
   icon?: ReactNode;
   style?: StyleProp<ViewStyle>;
 }) {
   const c = useTheme();
-  const bg = kind === 'primary' ? c.text : kind === 'quiet' ? c.fill : 'transparent';
-  const fg = kind === 'primary' ? c.bg : kind === 'danger' ? c.warn : kind === 'ghost' ? c.sub : c.text;
+  const bg = { primary: c.pink, lime: c.lime, quiet: c.card, danger: c.warnSoft, ghost: 'transparent' }[kind];
+  const outlined = kind !== 'ghost';
   return (
     <Pressable
       accessibilityRole="button"
@@ -89,22 +121,25 @@ export function Btn({
       disabled={disabled || loading}
       style={({ pressed }) => [
         styles.btn,
-        { backgroundColor: bg, opacity: disabled ? 0.35 : pressed ? 0.75 : 1 },
+        { backgroundColor: bg, opacity: disabled ? 0.45 : 1 },
+        outlined && { borderWidth: BORDER, borderColor: c.ink },
+        outlined && (pressed ? { transform: [{ translateX: 3 }, { translateY: 3 }] } : shadow(kind === 'quiet' ? 3 : 4)),
         style,
       ]}>
       {loading ? (
-        <ActivityIndicator color={fg} />
+        <ActivityIndicator color={c.ink} />
       ) : (
         <View style={styles.row}>
           {icon}
-          <Text style={[styles.btnText, { color: fg, fontFamily }]}>{label}</Text>
+          <Text style={[styles.btnText, { color: kind === 'ghost' ? c.sub : kind === 'danger' ? c.warn : c.ink, fontFamily: bodyFamily }]}>
+            {label}
+          </Text>
         </View>
       )}
     </Pressable>
   );
 }
 
-/** Round icon button, e.g. the camera button. */
 export function RoundBtn({
   onPress,
   children,
@@ -134,29 +169,32 @@ export function RoundBtn({
           borderRadius: size / 2,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: kind === 'primary' ? c.primary : c.fill,
-          transform: [{ scale: pressed ? 0.94 : 1 }],
+          backgroundColor: kind === 'primary' ? c.pink : c.card,
+          borderWidth: BORDER,
+          borderColor: c.ink,
         },
-        kind === 'primary' && styles.shadow,
+        pressed ? { transform: [{ translateX: 3 }, { translateY: 3 }] } : shadow(3),
       ]}>
-      {loading ? <ActivityIndicator color={kind === 'primary' ? c.onPrimary : c.text} /> : children}
+      {loading ? <ActivityIndicator color={c.ink} /> : children}
     </Pressable>
   );
 }
 
-/** iOS-style segmented control. */
+/** Row of sticker chips; the chosen one fills with colour. */
 export function Segmented<V extends string | number>({
   options,
   value,
   onChange,
+  color,
 }: {
   options: { value: V; label: string }[];
   value: V;
   onChange: (v: V) => void;
+  color?: string;
 }) {
   const c = useTheme();
   return (
-    <View style={[styles.seg, { backgroundColor: c.fill }]}>
+    <View style={styles.seg}>
       {options.map((o) => {
         const on = o.value === value;
         return (
@@ -165,8 +203,12 @@ export function Segmented<V extends string | number>({
             accessibilityRole="button"
             accessibilityState={{ selected: on }}
             onPress={() => onChange(o.value)}
-            style={[styles.segItem, on && [{ backgroundColor: c.card }, styles.segShadow]]}>
-            <Text style={[styles.segText, { color: on ? c.text : c.sub, fontFamily }]}>{o.label}</Text>
+            style={[
+              styles.segItem,
+              { borderColor: c.ink, backgroundColor: on ? color ?? c.butter : c.card },
+              on && shadow(3),
+            ]}>
+            <Text style={[styles.segText, { color: c.ink, fontFamily: bodyFamily, fontWeight: on ? '600' : '400' }]}>{o.label}</Text>
           </Pressable>
         );
       })}
@@ -174,17 +216,17 @@ export function Segmented<V extends string | number>({
   );
 }
 
-/** Grouped list container with an optional small heading. */
-export function Group({ title, children }: { title?: string; children: ReactNode }) {
-  const c = useTheme();
+export function Group({ title, children, color }: { title?: string; children: ReactNode; color?: string }) {
   return (
     <View style={{ marginBottom: 24 }}>
       {title ? (
-        <T kind="caption" style={{ marginLeft: 4, marginBottom: 8 }}>
+        <T kind="title" style={{ marginBottom: 10 }}>
           {title}
         </T>
       ) : null}
-      <View style={[styles.group, { backgroundColor: c.card }]}>{children}</View>
+      <Sticker color={color} style={{ paddingVertical: 4, paddingHorizontal: 16 }}>
+        {children}
+      </Sticker>
     </View>
   );
 }
@@ -206,14 +248,14 @@ export function Row({
 }) {
   const c = useTheme();
   const body = (
-    <View style={[styles.rowItem, !last && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: c.line }]}>
+    <View style={[styles.rowItem, !last && { borderBottomWidth: 1.5, borderBottomColor: c.ink, borderStyle: 'dashed' }]}>
       <View style={{ flex: 1 }}>
         <T kind="body">{label}</T>
         {sub ? <T kind="caption">{sub}</T> : null}
       </View>
       {value != null ? <T kind="body" color={c.sub}>{value}</T> : null}
       {right}
-      {onPress && !right ? <T kind="body" color={c.sub}> ›</T> : null}
+      {onPress && !right ? <T kind="title"> →</T> : null}
     </View>
   );
   return onPress ? (
@@ -225,7 +267,6 @@ export function Row({
   );
 }
 
-/** Compact − value + control that sits inside a Row. */
 export function Stepper({
   label,
   value,
@@ -251,17 +292,28 @@ export function Stepper({
       accessibilityLabel={`${label} ${sign}`}
       onPress={() => set(value + delta)}
       hitSlop={6}
-      style={({ pressed }) => [styles.mini, { backgroundColor: c.fill, opacity: pressed ? 0.6 : 1 }]}>
-      <Text style={[styles.miniText, { color: c.text }]}>{sign}</Text>
+      style={({ pressed }) => [styles.mini, { borderColor: c.ink, backgroundColor: pressed ? c.butter : c.card }]}>
+      <Text style={[styles.miniText, { color: c.ink }]}>{sign}</Text>
     </Pressable>
   );
   return (
     <View style={styles.stepper}>
       <B sign="−" delta={-step} />
-      <T kind="body" weight="600" style={{ minWidth: 76, textAlign: 'center' }}>
-        {value} <T kind="sub">{unit}</T>
+      <T kind="num" style={{ minWidth: 84, textAlign: 'center', fontSize: 20 }}>
+        {value}
+        <T kind="caption"> {unit}</T>
       </T>
       <B sign="+" delta={step} />
+    </View>
+  );
+}
+
+/** Small rounded label, e.g. "14,885 ก้าว". */
+export function Tag({ label, color, style }: { label: string; color?: string; style?: StyleProp<ViewStyle> }) {
+  const c = useTheme();
+  return (
+    <View style={[styles.tag, { backgroundColor: color ?? c.butter, borderColor: c.ink }, style]}>
+      <Text style={{ fontFamily: bodyFamily, fontSize: 12, fontWeight: '600', color: c.ink }}>{label}</Text>
     </View>
   );
 }
@@ -271,36 +323,30 @@ export function Gap({ h = 12 }: { h?: number }) {
 }
 
 const textStyles = StyleSheet.create({
-  hero: { fontSize: 64, fontWeight: '700', letterSpacing: -2.5, lineHeight: 70 },
-  display: { fontSize: 32, fontWeight: '700', letterSpacing: -0.8, lineHeight: 40 },
-  title: { fontSize: 19, fontWeight: '600', letterSpacing: -0.2 },
+  hero: { fontSize: 84, fontWeight: '800', letterSpacing: -4, lineHeight: 88 },
+  display: { fontSize: 34, fontWeight: '800', letterSpacing: -1.2, lineHeight: 42 },
+  num: { fontSize: 26, fontWeight: '800', letterSpacing: -1 },
+  title: { fontSize: 18, fontWeight: '600' },
   body: { fontSize: 16, lineHeight: 24 },
-  sub: { fontSize: 15, lineHeight: 22 },
+  sub: { fontSize: 15, lineHeight: 22, fontWeight: '300' },
   caption: { fontSize: 13, lineHeight: 18 },
 });
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
   scroll: { flexGrow: 1, paddingBottom: 48 },
-  inner: { width: '100%', maxWidth: MAX_W, alignSelf: 'center', paddingHorizontal: 24, paddingTop: 16, flex: 1 },
-  footer: { width: '100%', maxWidth: MAX_W, alignSelf: 'center', paddingHorizontal: 24, paddingTop: 8, paddingBottom: 24 },
-  btn: { minHeight: 54, borderRadius: 27, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 22 },
-  btnText: { fontSize: 16, fontWeight: '600' },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  shadow: {
-    shadowColor: '#FF5C7A',
-    shadowOpacity: 0.35,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 6,
-  },
-  seg: { flexDirection: 'row', borderRadius: 14, padding: 3 },
-  segItem: { flex: 1, paddingVertical: 9, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
-  segShadow: { shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 4, shadowOffset: { width: 0, height: 1 }, elevation: 1 },
-  segText: { fontSize: 14, fontWeight: '600' },
-  group: { borderRadius: radius, paddingHorizontal: 16 },
-  rowItem: { flexDirection: 'row', alignItems: 'center', minHeight: 56, paddingVertical: 10, gap: 10 },
-  stepper: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  mini: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
-  miniText: { fontSize: 20, lineHeight: 22, fontWeight: '500' },
+  inner: { width: '100%', maxWidth: MAX_W, alignSelf: 'center', paddingHorizontal: 22, paddingTop: 14, flex: 1 },
+  footer: { width: '100%', maxWidth: MAX_W, alignSelf: 'center', paddingHorizontal: 22, paddingTop: 10, paddingBottom: 22 },
+  sticker: { borderRadius: radius, borderWidth: BORDER, padding: 16 },
+  btn: { minHeight: 56, borderRadius: 30, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 },
+  btnText: { fontSize: 17, fontWeight: '600' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  seg: { flexDirection: 'row', gap: 10 },
+  segItem: { flex: 1, minHeight: 46, borderRadius: 16, borderWidth: BORDER, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
+  segText: { fontSize: 15 },
+  rowItem: { flexDirection: 'row', alignItems: 'center', minHeight: 58, paddingVertical: 10, gap: 10 },
+  stepper: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  mini: { width: 36, height: 36, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  miniText: { fontSize: 20, lineHeight: 22, fontWeight: '600' },
+  tag: { alignSelf: 'flex-start', borderWidth: 2, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 1 },
 });
