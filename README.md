@@ -1,56 +1,34 @@
-# Welcome to your Expo app 👋
+# Moo · กินเท่าไหร่ เดินเท่านั้น
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Moo แปลงอาหารที่กินเป็น "จำนวนก้าวเดิน" ถ่ายรูปอาหาร แล้ว AI บอกแคลอรี่และจำนวนก้าวที่เทียบเท่า
+ใช้ฟรีทั้งหมด ผู้ใช้เชื่อม Google Gemini API key ของตัวเอง (แบบฟรี ไม่ต้องใส่บัตร)
 
-## Get started
+Moo turns food into walking steps. Snap a meal, AI estimates calories, and Moo shows the equivalent steps.
+Free for everyone: each user connects their own free Google Gemini API key.
 
-1. Install dependencies
+## Features (MVP)
+- Thai / English, switchable
+- Onboarding without typing (steppers and chips)
+- Food photo → dish, kcal range, steps; adjust portion and "ate half" by tapping
+- Daily energy balance: eaten − body at rest (BMR × 1.2) − walking
+- Steps from an iPhone Shortcut (`/steps?n=<count>`) or an AI-read screenshot of any step app
+- 7-day history, CSV export for research
+- All data stays on the device (localStorage); the API key never leaves the device except to Google
 
-   ```bash
-   npm install
-   ```
+## Energy math
+- BMR: Mifflin-St Jeor; base burn = BMR × 1.2
+- Stride ≈ height × 0.415 (male) / 0.413 (female)
+- Net walking ≈ 0.5 kcal × weight(kg) × distance(km)
+- Daily step goal = steps to walk off intake above budget, clamped 6,000–20,000
 
-2. Start the app
+Estimates only, not medical advice.
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+## Develop
 ```bash
-npm run reset-project
+npm ci
+npx expo start --web
+npx tsc --noEmit
+npx expo export --platform web   # static site in dist/
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
-
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+The site is served from `/moo` (`experiments.baseUrl` in `app.json`). Pushing to `main` deploys to GitHub Pages via `.github/workflows/deploy.yml`.
