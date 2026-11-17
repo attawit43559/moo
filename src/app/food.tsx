@@ -110,7 +110,7 @@ export default function Food() {
       {ok && (
         <>
           <Gap h={22} />
-          <Sticker color={c.butter} style={{ alignItems: 'center', paddingVertical: 18 }}>
+          <Sticker color={c.lime} style={{ alignItems: 'center', paddingVertical: 18 }}>
             <T kind="title" center>
               {name(g)}
             </T>
@@ -140,8 +140,8 @@ export default function Food() {
                     <Pressable
                       key={i}
                       onPress={() => setChoice(i)}
-                      style={[styles.tag, { backgroundColor: on ? c.lime : c.card, borderColor: c.ink }, on && shadow(3)]}>
-                      <T kind="caption" weight={on ? '600' : '400'} color={c.ink}>
+                      style={[styles.tag, { backgroundColor: on ? c.ink : c.card }]}>
+                      <T kind="caption" weight={on ? '600' : '400'} color={on ? c.onPrimary : c.ink}>
                         {name(o)}
                       </T>
                     </Pressable>
@@ -182,7 +182,7 @@ export default function Food() {
 
 const styles = StyleSheet.create({
   polaroid: { padding: 10, paddingBottom: 18, marginTop: 6 },
-  photo: { width: '100%', aspectRatio: 4 / 3, borderRadius: 14, borderWidth: 1.5 },
+  photo: { width: '100%', aspectRatio: 4 / 3, borderRadius: 22 },
   center: { alignItems: 'center', paddingVertical: 32 },
   tag: { paddingHorizontal: 14, paddingVertical: 9, borderRadius: 16, borderWidth: BORDER },
 });

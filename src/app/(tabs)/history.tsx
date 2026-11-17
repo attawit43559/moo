@@ -48,7 +48,7 @@ export default function History() {
             <View key={x.key} style={styles.col}>
               <View style={{ height: H * 2, width: '100%', alignItems: 'center' }}>
                 {x.hasData ? (
-                  <View style={{ position: 'absolute', width: 18, height: h, borderRadius: 6, borderWidth: 1.5, borderColor: c.ink, backgroundColor: pos ? c.pink : c.lime, top: pos ? H - h : H }} />
+                  <View style={{ position: 'absolute', width: 18, height: h, borderRadius: 9, backgroundColor: pos ? c.pink : c.mint, top: pos ? H - h : H }} />
                 ) : (
                   <View style={{ position: 'absolute', width: 6, height: 6, borderRadius: 3, backgroundColor: c.ink, top: H - 3 }} />
                 )}
@@ -65,7 +65,7 @@ export default function History() {
         .slice()
         .reverse()
         .map((x, i) => (
-          <View key={x.key} style={[styles.row, i < 6 && { borderBottomWidth: 1.5, borderStyle: 'dashed', borderBottomColor: c.ink }]}>
+          <View key={x.key} style={[styles.row, i < 6 && { borderBottomWidth: 1, borderBottomColor: c.line }]}>
             <View style={{ flex: 1 }}>
               <T kind="body" weight="500">
                 {x.d.toLocaleDateString(loc, { weekday: 'short', day: 'numeric', month: 'short' })}
@@ -80,6 +80,7 @@ export default function History() {
           </View>
         ))}
       </Sticker>
+      <Gap h={110} />
     </Screen>
   );
 }

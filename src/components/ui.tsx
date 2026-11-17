@@ -65,7 +65,7 @@ export function T({
   );
 }
 
-/** White (or coloured) card with an ink outline and a hard offset shadow. */
+/** Borderless rounded card on a soft grey or pastel fill. */
 export function Sticker({
   children,
   color,
@@ -84,7 +84,7 @@ export function Sticker({
     <View
       style={[
         styles.sticker,
-        { backgroundColor: color ?? c.card, borderColor: c.ink },
+        { backgroundColor: color ?? c.card },
         !flat && shadow(4),
         tilt ? { transform: [{ rotate: `${tilt}deg` }] } : null,
         style,
@@ -112,8 +112,8 @@ export function Btn({
   style?: StyleProp<ViewStyle>;
 }) {
   const c = useTheme();
-  const bg = { primary: c.pink, lime: c.lime, quiet: c.card, danger: c.warnSoft, ghost: 'transparent' }[kind];
-  const outlined = kind !== 'ghost';
+  const bg = { primary: c.ink, lime: c.butter, quiet: c.card, danger: c.warnSoft, ghost: 'transparent' }[kind];
+  const fg = kind === 'primary' ? c.onPrimary : kind === 'ghost' ? c.sub : kind === 'danger' ? c.warn : c.ink;
   return (
     <Pressable
       accessibilityRole="button"
@@ -122,16 +122,15 @@ export function Btn({
       style={({ pressed }) => [
         styles.btn,
         { backgroundColor: bg, opacity: disabled ? 0.45 : 1 },
-        outlined && { borderWidth: BORDER, borderColor: c.ink },
-        outlined && (pressed ? { transform: [{ translateX: 3 }, { translateY: 3 }] } : shadow(kind === 'quiet' ? 3 : 4)),
+        pressed && { transform: [{ scale: 0.98 }], opacity: 0.85 },
         style,
       ]}>
       {loading ? (
-        <ActivityIndicator color={c.ink} />
+        <ActivityIndicator color={fg} />
       ) : (
         <View style={styles.row}>
           {icon}
-          <Text style={[styles.btnText, { color: kind === 'ghost' ? c.sub : kind === 'danger' ? c.warn : c.ink, fontFamily: bodyFamily }]}>
+          <Text style={[styles.btnText, { color: fg, fontFamily: bodyFamily }]}>
             {label}
           </Text>
         </View>
@@ -169,13 +168,11 @@ export function RoundBtn({
           borderRadius: size / 2,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: kind === 'primary' ? c.pink : c.card,
-          borderWidth: BORDER,
-          borderColor: c.ink,
+          backgroundColor: kind === 'primary' ? c.ink : c.card,
         },
-        pressed ? { transform: [{ translateX: 3 }, { translateY: 3 }] } : shadow(3),
+        pressed && { transform: [{ scale: 0.96 }] },
       ]}>
-      {loading ? <ActivityIndicator color={c.ink} /> : children}
+      {loading ? <ActivityIndicator color={kind === 'primary' ? c.onPrimary : c.ink} /> : children}
     </Pressable>
   );
 }
@@ -194,7 +191,7 @@ export function Segmented<V extends string | number>({
 }) {
   const c = useTheme();
   return (
-    <View style={styles.seg}>
+    <View style={[styles.seg, { backgroundColor: c.card }]}>
       {options.map((o) => {
         const on = o.value === value;
         return (
@@ -205,10 +202,9 @@ export function Segmented<V extends string | number>({
             onPress={() => onChange(o.value)}
             style={[
               styles.segItem,
-              { borderColor: c.ink, backgroundColor: on ? color ?? c.butter : c.card },
-              on && shadow(3),
+              { backgroundColor: on ? color ?? c.ink : 'transparent' },
             ]}>
-            <Text style={[styles.segText, { color: c.ink, fontFamily: bodyFamily, fontWeight: on ? '600' : '400' }]}>{o.label}</Text>
+            <Text style={[styles.segText, { color: on && !color ? c.onPrimary : c.ink, fontFamily: bodyFamily, fontWeight: on ? '600' : '400' }]}>{o.label}</Text>
           </Pressable>
         );
       })}
@@ -248,14 +244,14 @@ export function Row({
 }) {
   const c = useTheme();
   const body = (
-    <View style={[styles.rowItem, !last && { borderBottomWidth: 1.5, borderBottomColor: c.ink, borderStyle: 'dashed' }]}>
+    <View style={[styles.rowItem, !last && { borderBottomWidth: 1, borderBottomColor: c.line }]}>
       <View style={{ flex: 1 }}>
         <T kind="body">{label}</T>
         {sub ? <T kind="caption">{sub}</T> : null}
       </View>
       {value != null ? <T kind="body" color={c.sub}>{value}</T> : null}
       {right}
-      {onPress && !right ? <T kind="title"> →</T> : null}
+      {onPress && !right ? <T kind="title" color={c.sub}>›</T> : null}
     </View>
   );
   return onPress ? (
@@ -292,7 +288,7 @@ export function Stepper({
       accessibilityLabel={`${label} ${sign}`}
       onPress={() => set(value + delta)}
       hitSlop={6}
-      style={({ pressed }) => [styles.mini, { borderColor: c.ink, backgroundColor: pressed ? c.butter : c.card }]}>
+      style={({ pressed }) => [styles.mini, { backgroundColor: pressed ? c.line : c.bg }]}>
       <Text style={[styles.miniText, { color: c.ink }]}>{sign}</Text>
     </Pressable>
   );
@@ -312,7 +308,7 @@ export function Stepper({
 export function Tag({ label, color, style }: { label: string; color?: string; style?: StyleProp<ViewStyle> }) {
   const c = useTheme();
   return (
-    <View style={[styles.tag, { backgroundColor: color ?? c.butter, borderColor: c.ink }, style]}>
+    <View style={[styles.tag, { backgroundColor: color ?? c.bg }, style]}>
       <Text style={{ fontFamily: bodyFamily, fontSize: 12, fontWeight: '600', color: c.ink }}>{label}</Text>
     </View>
   );
@@ -323,12 +319,12 @@ export function Gap({ h = 12 }: { h?: number }) {
 }
 
 const textStyles = StyleSheet.create({
-  hero: { fontSize: 84, fontWeight: '800', letterSpacing: -4, lineHeight: 88 },
-  display: { fontSize: 34, fontWeight: '800', letterSpacing: -1.2, lineHeight: 42 },
-  num: { fontSize: 26, fontWeight: '800', letterSpacing: -1 },
-  title: { fontSize: 18, fontWeight: '600' },
+  hero: { fontSize: 72, fontWeight: '600', letterSpacing: -3, lineHeight: 80 },
+  display: { fontSize: 30, fontWeight: '600', letterSpacing: -0.8, lineHeight: 40 },
+  num: { fontSize: 24, fontWeight: '600', letterSpacing: -0.6 },
+  title: { fontSize: 17, fontWeight: '600' },
   body: { fontSize: 16, lineHeight: 24 },
-  sub: { fontSize: 15, lineHeight: 22, fontWeight: '300' },
+  sub: { fontSize: 15, lineHeight: 22 },
   caption: { fontSize: 13, lineHeight: 18 },
 });
 
@@ -338,15 +334,15 @@ const styles = StyleSheet.create({
   inner: { width: '100%', maxWidth: MAX_W, alignSelf: 'center', paddingHorizontal: 22, paddingTop: 14, flex: 1 },
   footer: { width: '100%', maxWidth: MAX_W, alignSelf: 'center', paddingHorizontal: 22, paddingTop: 10, paddingBottom: 22 },
   sticker: { borderRadius: radius, borderWidth: BORDER, padding: 16 },
-  btn: { minHeight: 56, borderRadius: 30, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 },
+  btn: { minHeight: 58, borderRadius: 30, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 },
   btnText: { fontSize: 17, fontWeight: '600' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  seg: { flexDirection: 'row', gap: 10 },
-  segItem: { flex: 1, minHeight: 46, borderRadius: 16, borderWidth: BORDER, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
+  seg: { flexDirection: 'row', gap: 4, padding: 4, borderRadius: 26 },
+  segItem: { flex: 1, minHeight: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
   segText: { fontSize: 15 },
   rowItem: { flexDirection: 'row', alignItems: 'center', minHeight: 58, paddingVertical: 10, gap: 10 },
   stepper: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  mini: { width: 36, height: 36, borderRadius: 18, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
+  mini: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   miniText: { fontSize: 20, lineHeight: 22, fontWeight: '600' },
-  tag: { alignSelf: 'flex-start', borderWidth: 1.5, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 1 },
+  tag: { alignSelf: 'flex-start', borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2 },
 });

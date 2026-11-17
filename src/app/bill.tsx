@@ -32,7 +32,6 @@ function Zigzag({ width, color, ink }: { width: number; color: string; ink: stri
   return (
     <Svg width={width} height={h + 2} style={{ marginTop: -1 }}>
       <Path d={d} fill={color} />
-      <Path d={edge} fill="none" stroke={ink} strokeWidth={BORDER} strokeLinejoin="round" />
     </Svg>
   );
 }
@@ -76,7 +75,7 @@ export default function Bill() {
       <Mono>{value}</Mono>
     </View>
   );
-  const Dash = () => <View style={[styles.dash, { borderColor: c.ink }]} />;
+  const Dash = () => <View style={[styles.dash, { borderColor: '#C9CCD1' }]} />;
 
   return (
     <Screen footer={<Btn kind="quiet" label={t('close')} onPress={close} />}>
@@ -93,8 +92,8 @@ export default function Bill() {
       <Gap h={40} />
       <View
         onLayout={(e) => setW(e.nativeEvent.layout.width)}
-        style={[styles.receiptWrap, { filter: 'drop-shadow(0 8px 18px rgba(27, 27, 27, 0.12))' } as object]}>
-        <View style={[styles.receipt, { backgroundColor: c.card, borderColor: c.ink }]}>
+        style={styles.receiptWrap}>
+        <View style={[styles.receipt, { backgroundColor: c.card }]}>
           <View style={styles.pig} pointerEvents="none">
             <Pig size={70} mood={progress >= 1 ? 'proud' : 'happy'} />
           </View>
@@ -126,7 +125,7 @@ export default function Bill() {
             </View>
           </View>
           <Gap h={10} />
-          <Bar progress={progress} height={14} color={progress >= 1 ? c.lime : c.pink} />
+          <Bar progress={progress} height={8} color={progress >= 1 ? c.good : c.ink} />
           <Gap h={8} />
           <View style={styles.paid}>
             <Mono style={{ color: c.sub }}>{t('billPaid')}</Mono>

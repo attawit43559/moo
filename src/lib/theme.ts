@@ -1,27 +1,28 @@
-// "Sticker Pop" design system: cream paper, ink outlines, candy colours, soft shadows.
-// One palette on purpose: the look depends on the cream + ink contrast.
+// "Soft Pastel" design system: white page, borderless pastel cards, black pills for actions.
 
 const palette = {
-  bg: '#FFF4E2', // cream paper
-  card: '#FFFFFF',
-  fill: '#FFF9F0',
-  ink: '#1B1B1B',
-  text: '#1B1B1B',
-  sub: '#6E655B',
-  line: '#1B1B1B',
-  pink: '#FF8FB1',
-  pinkLight: '#FFB3C7',
-  lime: '#C6F36B',
-  sky: '#8FD3FF',
-  butter: '#FFD84D',
-  primary: '#FF8FB1',
-  primarySoft: '#FFE0EA',
-  onPrimary: '#1B1B1B',
-  good: '#1E9E5A',
-  goodSoft: '#C6F36B',
-  warn: '#E5484D',
-  warnSoft: '#FFD9D9',
-  ringTrack: '#FFF4E2',
+  bg: '#FFFFFF',
+  card: '#F3F4F6', // soft grey surface
+  fill: '#F3F4F6',
+  ink: '#111111',
+  text: '#111111',
+  sub: '#6B6F76',
+  line: '#E8E9EC',
+  pink: '#FFC9D6',
+  pinkLight: '#FFE3EA',
+  lime: '#FFE2CC', // peach (hero)
+  sky: '#CBEFFC',
+  butter: '#FFF3A6',
+  slate: '#D7E2EB',
+  mint: '#D6F4E2',
+  primary: '#111111',
+  primarySoft: '#FFE3EA',
+  onPrimary: '#FFFFFF',
+  good: '#1A8F52',
+  goodSoft: '#D6F4E2',
+  warn: '#D9363E',
+  warnSoft: '#FFE1E1',
+  ringTrack: '#E8E9EC',
 };
 
 export type Palette = typeof palette;
@@ -32,10 +33,10 @@ export function useTheme(): Palette {
 
 /** Thai-first clean font for text. */
 export const font = 'Anuphan, system-ui, sans-serif';
-/** Chunky display font for numbers and Latin headings; Thai glyphs fall back to Anuphan. */
-export const displayFont = '"Bricolage Grotesque", Anuphan, system-ui, sans-serif';
+/** Geometric display font for numbers and Latin headings; Thai glyphs fall back to Anuphan. */
+export const displayFont = 'Lexend, Anuphan, system-ui, sans-serif';
 export const monoFont = '"IBM Plex Mono", Anuphan, ui-monospace, monospace';
-export const radius = 24;
+export const radius = 28;
 export const MAX_W = 480;
-export const BORDER = 1.5;
-export const shadow = (n = 4) => ({ boxShadow: `0 ${n + 2}px ${n * 4}px rgba(27, 27, 27, 0.10)` });
+export const BORDER = 0;
+export const shadow = (_n = 4) => ({});

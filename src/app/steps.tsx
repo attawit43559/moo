@@ -105,7 +105,7 @@ export default function Steps() {
               {t('shortcutSteps')}
             </T>
             <Gap h={12} />
-            <View style={[styles.code, { backgroundColor: c.bg, borderColor: c.ink }]}>
+            <View style={[styles.code, { backgroundColor: c.bg, borderColor: c.line }]}>
               <T kind="caption" style={{ fontFamily: Platform.OS === 'web' ? 'ui-monospace, monospace' : undefined }}>
                 {shortcutLink()}
               </T>

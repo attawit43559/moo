@@ -30,7 +30,7 @@ export default function Onboarding() {
       }>
       <View style={styles.dots}>
         {[0, 1, 2].map((i) => (
-          <View key={i} style={[styles.dot, { borderColor: c.ink, backgroundColor: i < step ? c.ink : i === step ? c.pink : c.card, width: i === step ? 34 : 14 }]} />
+          <View key={i} style={[styles.dot, { borderColor: c.ink, backgroundColor: i <= step ? c.ink : c.line, width: i === step ? 28 : 8 }]} />
         ))}
       </View>
 
@@ -88,7 +88,7 @@ export default function Onboarding() {
 const styles = StyleSheet.create({
   center: { alignItems: 'center', paddingTop: 28 },
   dots: { flexDirection: 'row', gap: 8, marginBottom: 28 },
-  dot: { height: 14, borderRadius: 7, borderWidth: 1.5 },
+  dot: { height: 8, borderRadius: 4 },
   blob: { width: 190, height: 190, borderRadius: 95, borderWidth: BORDER, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-3deg' }] },
   tagline: { paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20, transform: [{ rotate: '1deg' }] },
 });

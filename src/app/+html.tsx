@@ -12,7 +12,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
         <title>Moo</title>
         <meta name="description" content="กินเท่าไหร่ เดินเท่านั้น: ถ่ายรูปอาหาร แปลงเป็นก้าวเดิน" />
-        <meta name="theme-color" content="#FFF4E2" />
+        <meta name="theme-color" content="#FFFFFF" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -22,7 +22,7 @@ export default function Root({ children }: PropsWithChildren) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;600&family=Anuphan:wght@300;400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&family=Anuphan:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
         <ScrollViewStyleReset />
@@ -38,5 +38,5 @@ export default function Root({ children }: PropsWithChildren) {
 }
 
 const css = `
-body { background-color: #FFF4E2; -webkit-tap-highlight-color: transparent; }
+body { background-color: #FFFFFF; -webkit-tap-highlight-color: transparent; }
 `;
