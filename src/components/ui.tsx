@@ -112,7 +112,7 @@ export function Btn({
   style?: StyleProp<ViewStyle>;
 }) {
   const c = useTheme();
-  const bg = { primary: c.ink, lime: c.butter, quiet: c.card, danger: c.warnSoft, ghost: 'transparent' }[kind];
+  const bg = { primary: c.primary, lime: c.butter, quiet: c.card, danger: c.warnSoft, ghost: 'transparent' }[kind];
   const fg = kind === 'primary' ? c.onPrimary : kind === 'ghost' ? c.sub : kind === 'danger' ? c.warn : c.ink;
   return (
     <Pressable
@@ -168,7 +168,7 @@ export function RoundBtn({
           borderRadius: size / 2,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: kind === 'primary' ? c.ink : c.card,
+          backgroundColor: kind === 'primary' ? c.primary : c.card,
         },
         pressed && { transform: [{ scale: 0.96 }] },
       ]}>
@@ -202,9 +202,9 @@ export function Segmented<V extends string | number>({
             onPress={() => onChange(o.value)}
             style={[
               styles.segItem,
-              { backgroundColor: on ? color ?? c.ink : 'transparent' },
+              { backgroundColor: on ? color ?? c.bg : 'transparent' },
             ]}>
-            <Text style={[styles.segText, { color: on && !color ? c.onPrimary : c.ink, fontFamily: bodyFamily, fontWeight: on ? '600' : '400' }]}>{o.label}</Text>
+            <Text style={[styles.segText, { color: c.ink, fontFamily: bodyFamily, fontWeight: on ? '600' : '400' }]}>{o.label}</Text>
           </Pressable>
         );
       })}

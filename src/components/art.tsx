@@ -19,7 +19,7 @@ export function Ring({
   const r = (size - stroke) / 2;
   const circ = 2 * Math.PI * r;
   const p = Math.max(0, Math.min(1, progress));
-  const color = p >= 1 ? c.good : c.primary;
+  const color = p >= 1 ? c.good : c.ink;
   const shown = p > 0 ? Math.max(p, 0.012) : 0;
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>

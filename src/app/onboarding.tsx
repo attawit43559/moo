@@ -40,8 +40,8 @@ export default function Onboarding() {
             <Pig size={130} />
           </View>
           <Gap h={14} />
-          <View style={[styles.tagline, { backgroundColor: c.ink }]}>
-            <T kind="caption" color={c.bg} weight="500">
+          <View style={[styles.tagline, { backgroundColor: c.pinkLight }]}>
+            <T kind="caption" color={c.ink} weight="500">
               {t('appTagline')}
             </T>
           </View>
