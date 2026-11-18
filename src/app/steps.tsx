@@ -1,3 +1,4 @@
+import * as Clipboard from 'expo-clipboard';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, StyleSheet, View } from 'react-native';
@@ -21,6 +22,13 @@ export default function Steps() {
   const [found, setFound] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const lang = state.lang;
+  const [copied, setCopied] = useState(false);
+  const install = async () => {
+    if (state.syncId) await Clipboard.setStringAsync(state.syncId).catch(() => {});
+    setCopied(true);
+    markShortcutInstalled();
+    Linking.openURL(shortcutInstallUrl());
+  };
 
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
 
@@ -82,11 +90,34 @@ export default function Steps() {
       <T kind="sub">{t('stepsIntro')}</T>
       <Gap h={28} />
 
+      <Sticker color={c.card} style={{ padding: 20 }}>
+        <T kind="title">{t('viaShortcut')}</T>
+        <Gap h={12} />
+        <T kind="body" weight="600">
+          {t('syncStep1')}
+        </T>
+        <T kind="caption">{t('syncStep1Hint')}</T>
+        <Gap h={10} />
+        <View style={[styles.code, { backgroundColor: c.bg }]}>
+          <T kind="body" weight="600" style={{ letterSpacing: 1 }}>
+            {state.syncId}
+          </T>
+          <T kind="caption">{copied ? t('copied') : t('syncCode')}</T>
+        </View>
+        <Gap h={10} />
+        <Btn label={t('syncInstall')} onPress={install} />
+        <Gap h={20} />
+        <T kind="body" weight="600">
+          {t('syncStep2')}
+        </T>
+        <Gap h={4} />
+        <T kind="sub" color={c.text}>
+          {t('syncStep2Body')}
+        </T>
+      </Sticker>
+
+      <Gap h={16} />
       <Group>
-        <Row label={t('viaShortcut')} sub={t('viaShortcutHint')} onPress={() => {
-            markShortcutInstalled();
-            Linking.openURL(shortcutInstallUrl());
-          }} last={false} />
         <Row label={t('viaScreenshot')} sub={t('viaScreenshotHint')} onPress={fromScreenshot} last />
       </Group>
 
@@ -124,4 +155,5 @@ export default function Steps() {
 
 const styles = StyleSheet.create({
   center: { alignItems: 'center', paddingVertical: 28 },
+  code: { borderRadius: 16, paddingVertical: 12, paddingHorizontal: 14, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
 });

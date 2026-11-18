@@ -8,11 +8,22 @@
 	<array>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.gettext</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>UUID</key>
+				<string>29451B09-A675-4F25-A08D-38BBAFAB8B8F</string>
+				<key>WFTextActionText</key>
+				<string></string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.filter.health.quantity</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>UUID</key>
-				<string>948E6AFE-55B6-4608-8E57-9E0DF10F3265</string>
+				<string>BA3DBC32-9F15-478D-B19E-C186AFD9DC41</string>
 				<key>WFContentItemFilter</key>
 				<dict>
 					<key>Value</key>
@@ -73,7 +84,7 @@
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>UUID</key>
-				<string>26AA30C8-7FFD-4A38-A471-714572EE36C4</string>
+				<string>B31DC08A-9D04-4561-9296-9DDDD14FCB04</string>
 				<key>WFInput</key>
 				<dict>
 					<key>Value</key>
@@ -81,7 +92,7 @@
 						<key>OutputName</key>
 						<string>Health Samples</string>
 						<key>OutputUUID</key>
-						<string>948E6AFE-55B6-4608-8E57-9E0DF10F3265</string>
+						<string>BA3DBC32-9F15-478D-B19E-C186AFD9DC41</string>
 						<key>Type</key>
 						<string>ActionOutput</string>
 					</dict>
@@ -98,7 +109,7 @@
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>UUID</key>
-				<string>91B89E5B-2EFD-43BD-93BF-17B3AE995E7B</string>
+				<string>DD429145-EA78-42DF-9270-01BEA71D5B17</string>
 				<key>WFInput</key>
 				<dict>
 					<key>Value</key>
@@ -106,7 +117,7 @@
 						<key>OutputName</key>
 						<string>Statistics</string>
 						<key>OutputUUID</key>
-						<string>26AA30C8-7FFD-4A38-A471-714572EE36C4</string>
+						<string>B31DC08A-9D04-4561-9296-9DDDD14FCB04</string>
 						<key>Type</key>
 						<string>ActionOutput</string>
 					</dict>
@@ -121,27 +132,38 @@
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.openurl</string>
+			<string>is.workflow.actions.downloadurl</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFInput</key>
+				<key>WFHTTPMethod</key>
+				<string>GET</string>
+				<key>WFURL</key>
 				<dict>
 					<key>Value</key>
 					<dict>
 						<key>attachmentsByRange</key>
 						<dict>
+							<key>{20, 1}</key>
+							<dict>
+								<key>OutputName</key>
+								<string>Text</string>
+								<key>OutputUUID</key>
+								<string>29451B09-A675-4F25-A08D-38BBAFAB8B8F</string>
+								<key>Type</key>
+								<string>ActionOutput</string>
+							</dict>
 							<key>{38, 1}</key>
 							<dict>
 								<key>OutputName</key>
 								<string>Rounded Number</string>
 								<key>OutputUUID</key>
-								<string>91B89E5B-2EFD-43BD-93BF-17B3AE995E7B</string>
+								<string>DD429145-EA78-42DF-9270-01BEA71D5B17</string>
 								<key>Type</key>
 								<string>ActionOutput</string>
 							</dict>
 						</dict>
 						<key>string</key>
-						<string>https://attawit43559.github.io/moo/?n=￼</string>
+						<string>https://ntfy.sh/moo-￼/publish?message=￼</string>
 					</dict>
 					<key>WFSerializationType</key>
 					<string>WFTextTokenString</string>
@@ -163,7 +185,20 @@
 		<integer>4282601983</integer>
 	</dict>
 	<key>WFWorkflowImportQuestions</key>
-	<array/>
+	<array>
+		<dict>
+			<key>ActionIndex</key>
+			<integer>0</integer>
+			<key>Category</key>
+			<string>Parameter</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>ParameterKey</key>
+			<string>WFTextActionText</string>
+			<key>Text</key>
+			<string>วางรหัส Moo ที่คัดลอกไว้ (Paste your Moo code)</string>
+		</dict>
+	</array>
 	<key>WFWorkflowInputContentItemClasses</key>
 	<array/>
 	<key>WFWorkflowMinimumClientVersion</key>

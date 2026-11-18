@@ -7,10 +7,11 @@ import Svg, { Path } from 'react-native-svg';
 import { Bar, Pig, PigMood } from '@/components/art';
 import { Gap, Screen, T } from '@/components/ui';
 import { kcalToSteps, summarize, todayKey } from '@/lib/energy';
-import { clearStepsParam, isIOSStandalone, isIOSWeb, markShortcutInstalled, parseSteps, runShortcut, shortcutInstalled } from '@/lib/health';
+import { clearStepsParam, isIOSWeb, markShortcutInstalled, parseSteps, shortcutInstalled } from '@/lib/health';
 import { fmt } from '@/lib/i18n';
 import { useSnap } from '@/lib/snap';
 import { useStore } from '@/lib/store';
+import { useStepSync } from '@/lib/useStepSync';
 import { useTheme } from '@/lib/theme';
 
 function Icon({ d, color, size = 20 }: { d: string; color: string; size?: number }) {
@@ -27,6 +28,7 @@ const GALLERY = 'M4 5h16v14H4zM4 15l4.5-4.5 4 4 2.5-2.5L20 17';
 export default function Today() {
   const { t, state, removeMeal, setSteps } = useStore();
   const params = useLocalSearchParams<{ n?: string }>();
+  const pull = useStepSync();
   const c = useTheme();
   const { busy, snap } = useSnap();
   const [armed, setArmed] = useState<string | null>(null);
@@ -55,10 +57,12 @@ export default function Today() {
     setTimeout(clearStepsParam, 50);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.n]);
-  const linked = shortcutInstalled() || Object.values(state.steps).some((e) => e.source === 'shortcut');
+  const linked = shortcutInstalled() || Object.values(state.steps).some((e) => e.source !== 'screenshot');
   const stale = !stepEntry || now.getTime() - new Date(stepEntry.updatedAt).getTime() > 10 * 60 * 1000;
-  const standalone = isIOSStandalone();
-  const refresh = () => (isIOSWeb() && linked ? runShortcut() : router.push('/steps'));
+  const refresh = async () => {
+    if (linked && (await pull())) return;
+    router.push('/steps');
+  };
   const mealColors = [c.sky, c.pinkLight, c.mint, c.butter];
 
   return (
@@ -87,11 +91,11 @@ export default function Today() {
         </T>
         <Gap h={16} />
         <Bar progress={progress} />
-        {isIOSWeb() && (standalone || stale) ? (
+        {isIOSWeb() && stale ? (
           <>
             <Gap h={12} />
             <T kind="caption" color={c.text}>
-              {standalone ? t('openInSafari') : linked ? t('tapToRefresh') : t('connectHealthHint')}
+              {linked ? t('syncWaiting') : t('connectHealthHint')}
             </T>
           </>
         ) : null}

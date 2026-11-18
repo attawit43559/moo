@@ -27,6 +27,8 @@ export interface State {
   meals: Meal[];
   steps: Record<string, StepEntry>;
   aiUsage: Record<string, number>;
+  /** Private code that links this browser to the user's iPhone step Shortcut (ntfy topic suffix). */
+  syncId: string | null;
 }
 
 const initial: State = {
@@ -36,6 +38,7 @@ const initial: State = {
   meals: [],
   steps: {},
   aiUsage: {},
+  syncId: null,
 };
 
 const KEY = 'moo-state-v1';
@@ -62,9 +65,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     AsyncStorage.getItem(KEY)
       .then((raw) => {
-        if (raw) setState({ ...initial, ...JSON.parse(raw) });
+        const saved = raw ? { ...initial, ...JSON.parse(raw) } : initial;
+        setState(saved.syncId ? saved : { ...saved, syncId: makeSyncId() });
       })
-      .catch(() => {})
+      .catch(() => setState((s) => ({ ...s, syncId: s.syncId ?? makeSyncId() })))
       .finally(() => {
         loaded.current = true;
         setReady(true);
@@ -96,7 +100,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           const d = todayKey();
           return { ...s, aiUsage: { ...s.aiUsage, [d]: (s.aiUsage[d] ?? 0) + 1 } };
         }),
-      reset: () => update(() => ({ ...initial, lang: state.lang })),
+      reset: () => update(() => ({ ...initial, lang: state.lang, syncId: state.syncId })),
     }),
     [ready, state, update],
   );
@@ -112,4 +116,13 @@ export function useStore(): Ctx {
 
 export function newId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+/** 16 random lowercase letters and digits; long enough that nobody can guess another user's code. */
+export function makeSyncId(): string {
+  const abc = 'abcdefghijkmnpqrstuvwxyz23456789';
+  const bytes = new Uint8Array(16);
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) crypto.getRandomValues(bytes);
+  else for (let i = 0; i < 16; i++) bytes[i] = Math.floor(Math.random() * 256);
+  return Array.from(bytes, (b) => abc[b % abc.length]).join('');
 }
