@@ -6,7 +6,7 @@ import { Pig } from '@/components/art';
 import { Btn, Gap, Group, Row, Screen, Sticker, T } from '@/components/ui';
 import { todayKey } from '@/lib/energy';
 import { KeyError, QuotaError, readSteps } from '@/lib/gemini';
-import { parseSteps, shortcutInstallUrl } from '@/lib/health';
+import { markShortcutInstalled, parseSteps, shortcutInstallUrl } from '@/lib/health';
 import { fmt } from '@/lib/i18n';
 import { pickImage } from '@/lib/image';
 import { useStore } from '@/lib/store';
@@ -83,7 +83,10 @@ export default function Steps() {
       <Gap h={28} />
 
       <Group>
-        <Row label={t('viaShortcut')} sub={t('viaShortcutHint')} onPress={() => Linking.openURL(shortcutInstallUrl())} last={false} />
+        <Row label={t('viaShortcut')} sub={t('viaShortcutHint')} onPress={() => {
+            markShortcutInstalled();
+            Linking.openURL(shortcutInstallUrl());
+          }} last={false} />
         <Row label={t('viaScreenshot')} sub={t('viaScreenshotHint')} onPress={fromScreenshot} last />
       </Group>
 

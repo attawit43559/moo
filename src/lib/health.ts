@@ -38,3 +38,21 @@ export function clearStepsParam() {
     window.history.replaceState(null, '', u.toString());
   }
 }
+
+const FLAG = 'moo-shortcut-installed';
+const safe = (f: () => void) => { try { f(); } catch {} };
+
+/** Remember that this browser has the Moo Shortcut, so refresh can run it directly. */
+export function markShortcutInstalled() {
+  safe(() => localStorage.setItem(FLAG, '1'));
+}
+export function shortcutInstalled(): boolean {
+  let v = false;
+  safe(() => { v = localStorage.getItem(FLAG) === '1'; });
+  return v;
+}
+
+/** Opened from a home-screen web icon on iPhone: storage is separate from Safari, where the Shortcut returns. */
+export function isIOSStandalone(): boolean {
+  return isIOSWeb() && typeof navigator !== 'undefined' && (navigator as unknown as { standalone?: boolean }).standalone === true;
+}

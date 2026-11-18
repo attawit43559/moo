@@ -7,7 +7,7 @@ import Svg, { Path } from 'react-native-svg';
 import { Bar, Pig, PigMood } from '@/components/art';
 import { Gap, Screen, T } from '@/components/ui';
 import { kcalToSteps, summarize, todayKey } from '@/lib/energy';
-import { clearStepsParam, isIOSWeb, parseSteps, runShortcut } from '@/lib/health';
+import { clearStepsParam, isIOSStandalone, isIOSWeb, markShortcutInstalled, parseSteps, runShortcut, shortcutInstalled } from '@/lib/health';
 import { fmt } from '@/lib/i18n';
 import { useSnap } from '@/lib/snap';
 import { useStore } from '@/lib/store';
@@ -50,11 +50,14 @@ export default function Today() {
     const n = parseSteps(params.n);
     if (n == null) return;
     setSteps(todayKey(), n, 'shortcut');
+    markShortcutInstalled();
     router.setParams({ n: undefined });
     setTimeout(clearStepsParam, 50);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.n]);
-  const linked = Object.values(state.steps).some((e) => e.source === 'shortcut');
+  const linked = shortcutInstalled() || Object.values(state.steps).some((e) => e.source === 'shortcut');
+  const stale = !stepEntry || now.getTime() - new Date(stepEntry.updatedAt).getTime() > 10 * 60 * 1000;
+  const standalone = isIOSStandalone();
   const refresh = () => (isIOSWeb() && linked ? runShortcut() : router.push('/steps'));
   const mealColors = [c.sky, c.pinkLight, c.mint, c.butter];
 
@@ -84,6 +87,14 @@ export default function Today() {
         </T>
         <Gap h={16} />
         <Bar progress={progress} />
+        {isIOSWeb() && (standalone || stale) ? (
+          <>
+            <Gap h={12} />
+            <T kind="caption" color={c.text}>
+              {standalone ? t('openInSafari') : linked ? t('tapToRefresh') : t('connectHealthHint')}
+            </T>
+          </>
+        ) : null}
       </View>
 
       <Gap h={12} />
